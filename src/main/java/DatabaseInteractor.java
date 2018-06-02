@@ -14,9 +14,9 @@ public class DatabaseInteractor {
 	ObjectInputStream ois;
 	ObjectOutputStream oos;
 	
-	List<File> files;
+	List<String> files;
 
-	public DatabaseInteractor(List<File> files) {
+	public DatabaseInteractor() {
 		try {
 			database = new File("database.dat");
 			fis = new FileInputStream(database);
@@ -28,9 +28,9 @@ public class DatabaseInteractor {
 		}
 	}
 	
-	public List<File> readFiles() {
+	public List<String> readFiles() {
 		try {
-			files = (List<File>) ois.readObject();
+			files = (List<String>) ois.readObject();
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -39,7 +39,7 @@ public class DatabaseInteractor {
 		return files;		
 	}
 	
-	public void updateFiles(List<File> files) {
+	public void updateFiles(List<String> files) {
 		try {
 			database.createNewFile();
 			oos.writeObject(files);
