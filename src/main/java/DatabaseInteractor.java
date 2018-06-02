@@ -8,44 +8,33 @@ import java.util.List;
 
 public class DatabaseInteractor {
 
-	File database;
-	FileInputStream fis;
-	FileOutputStream fos;
-	ObjectInputStream ois;
-	ObjectOutputStream oos;
-	
-	List<String> files;
-
-	public DatabaseInteractor() {
+	public List<String> readFiles() {
+		List<String> files = null;
 		try {
-			database = new File("database.dat");
-			fis = new FileInputStream(database);
-			ois = new ObjectInputStream(fis);
-			fos = new FileOutputStream(database);
-			oos = new ObjectOutputStream(fos);
+			File database = new File("database.dat");
+			FileInputStream fis = new FileInputStream(database);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			files = (List<String>) ois.readObject();
+			fis.close();
+			ois.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		return files;
 	}
-	
-	public List<String> readFiles() {
-		try {
-			files = (List<String>) ois.readObject();
-		}
-		catch(Exception e) {
-			e.printStackTrace();
-		}
-		
-		return files;		
-	}
-	
+
 	public void updateFiles(List<String> files) {
 		try {
+			File database = new File("database.dat");
 			database.createNewFile();
+			FileOutputStream fos = new FileOutputStream(database);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(files);
 			oos.flush();
-		}
-		catch(Exception e) {
+			fos.close();
+			oos.close();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
