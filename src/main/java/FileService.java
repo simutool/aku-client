@@ -17,7 +17,7 @@ public class FileService extends Thread {
 
 			//Code to get new files
 			List<String> new_scanned_files = null;
-			File[] files = new File("/path/to/the/directory").listFiles();
+			File[] files = new File("/local").listFiles();
 			for (File file : files) {
 			    if (file.isFile()) {
 			        new_scanned_files.add(file.getName());
