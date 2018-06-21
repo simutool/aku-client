@@ -1,0 +1,11 @@
+[files]
+observe = "c:\my documents\kbmsupload"
+files = "*.pdf"
+
+[fixed metadata]
+activity = http://uni-bamberg.de/mobi/kbms/simutool/Activity/Simulation
+
+[default metadata]
+created = %(today)s
+contributor = http://uni-bamberg.de/mobi/kbms/simutool/User/18779w
+dc_description = "Please enter a description"

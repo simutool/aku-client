@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class ConfigFile {
 
-	private File configFile;
+	private File configFile = new File("C:\\Users\\Harshit Gupta\\workspace\\PrePoorClient\\appfiles\\config.txt");
 	private BufferedReader br;
 
 	private String observeDirectory;
