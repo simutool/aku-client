@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class ConfigFile {
 
-	private File configFile = new File("C:\\Users\\Harshit Gupta\\workspace\\PrePoorClient\\appfiles\\config.txt");
+	private File configFile;
 	private BufferedReader br;
 
 	private String observeDirectory;
@@ -20,6 +20,8 @@ public class ConfigFile {
 	private String dc_description;
 
 	public ConfigFile() {
+		
+		configFile = new File("C:\\Users\\Harshit Gupta\\workspace\\PrePoorClient\\appfiles\\config.txt");
 		try {
 			br = new BufferedReader(new FileReader(configFile));
 		} catch (FileNotFoundException e) {
@@ -71,20 +73,27 @@ public class ConfigFile {
 	
 	
 	public void parse() {
-		String line;
+		String line = null;
 		try {
-			while ((line = br.readLine()) != null) {
+			line = br.readLine();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		try {
+			while (line != null) {
 
 				// Parse Observation Directory
 				int indexOfObserve = line.indexOf("observe");
-				if (indexOfObserve > 0) {
+				if (indexOfObserve >= 0) {
 					observeDirectory = line.substring(11, line.length() - 1);
 				}
 
 				// Parse File Types
 				int indexOfFiles = line.indexOf("files");
-				if (indexOfFiles > 0) {
+				if (indexOfFiles >= 0) {
 					int noOfCommas = StringUtils.countMatches(line, ",");
+					System.out.println("NoOfCommas: " + noOfCommas);
 					String localFileTypes = line.substring(9, line.length() - 1);
 					if (noOfCommas == 0) {
 						// Means only one file type
@@ -92,18 +101,28 @@ public class ConfigFile {
 					} else if (noOfCommas == 1) {
 						// Means 2 file types
 						String firstFileType = localFileTypes.substring(0, localFileTypes.indexOf(","));
-						String secondFileType = localFileTypes.substring(localFileTypes.indexOf(","),
+						String secondFileType = localFileTypes.substring(localFileTypes.indexOf(",")+1,
 								localFileTypes.length());
 						fileTypes.add(firstFileType);
 						fileTypes.add(secondFileType);
 
 					} else if (noOfCommas > 1) {
 						// Means more than 2 file types
-						while (localFileTypes.indexOf(",") > 0) {
+						System.out.println("NoOfCommas2IF");
+						for(int c = 0; c <= noOfCommas; c++) {
+							if(c==noOfCommas) {
+								fileTypes.add(localFileTypes);
+								break;
+							}
 							String fileType = localFileTypes.substring(0, localFileTypes.indexOf(","));
-							localFileTypes = localFileTypes.substring(localFileTypes.indexOf(","),
+							localFileTypes = localFileTypes.substring(localFileTypes.indexOf(",")+1,
 									localFileTypes.length());
 							fileTypes.add(fileType);
+							if(localFileTypes.indexOf(",") <= 0) {
+								if(localFileTypes.length() > 0) {
+									
+								}
+							}
 						}
 
 					}
@@ -111,27 +130,26 @@ public class ConfigFile {
 
 				// Parse Activity
 				int indexOfActivity = line.indexOf("activity");
-				if (indexOfActivity > 0) {
+				if (indexOfActivity >= 0) {
 					activity = line.substring(11, line.length());
 				}
-				else activity = "empty";
 
 				// Parse Contributor
 				int indexOfContributor = line.indexOf("contributor");
-				if (indexOfContributor > 0) {
+				if (indexOfContributor >= 0) {
 					contributor = line.substring(13, line.length());
 				}
-				else contributor = "empty";
 
 				// Parse dc_description
 				int indexOfDescription = line.indexOf("dc_description");
-				if (indexOfDescription > 0) {
+				if (indexOfDescription >= 0) {
 					dc_description = line.substring(16, line.length());
 				}
-				else dc_description = "empty";
+				
+				line = br.readLine();
 				
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

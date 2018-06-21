@@ -1,6 +1,6 @@
-[files]
+[]
 observe = "c:\my documents\kbmsupload"
-files = "*.pdf"
+files = "*.pdf,*.txt,*.jpg"
 
 [fixed metadata]
 activity = http://uni-bamberg.de/mobi/kbms/simutool/Activity/Simulation
