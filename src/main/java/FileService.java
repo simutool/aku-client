@@ -31,6 +31,7 @@ public class FileService extends Thread {
 				int k = files_in_database.indexOf(file_name);
 				if(k==-1) {
 					files_in_database.add(file_name);
+					//Add the new file into a variable that the MainClient can also access
 				}
 				else {
 					new_scanned_files.remove(file_name);
