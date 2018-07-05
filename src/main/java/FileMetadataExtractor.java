@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,30 +15,29 @@ import org.apache.tika.sax.BodyContentHandler;
 import org.xml.sax.SAXException;
 
 public class FileMetadataExtractor {
-	
+
 	FileMetadata fileMetadata = null;
 
 	public FileMetadata getMetadata(File file) {
 
-		Metadata metadata = extractMetadata(file);
-		
-		return null;
+		FileMetadata fileMetadata = extractMetadata(file);
+
+		return fileMetadata;
 	}
 
 	public List<FileMetadata> getMetadata(List<File> files) {
 		Iterator<File> i = files.iterator();
-		
-		while(i.hasNext()) {
+		ArrayList<FileMetadata> filesMetadata = new ArrayList<FileMetadata>();
+
+		while (i.hasNext()) {
 			File file = i.next();
-			Metadata metadata = extractMetadata(file);
+			filesMetadata.add(extractMetadata(file));
 		}
-		
-		
+
 		return null;
 	}
-	
 
-	private Metadata extractMetadata(File file) {
+	private FileMetadata extractMetadata(File file) {
 
 		// parameters of parse() method
 		Parser parser = new AutoDetectParser();
@@ -66,21 +66,26 @@ public class FileMetadataExtractor {
 			e.printStackTrace();
 		}
 
-		// // list of meta data elements elements
-		// System.out.println(" metadata elements and values of the given file
-		// :");
-		// String[] metadataNamesb4 = metadata.names();
-		//
-		// for (String name : metadataNamesb4) {
-		// System.out.println(name + ": " + metadata.get(name));
-		// }
+		String[] metadataNames = metadata.names();
+		
+		fileMetadata = new FileMetadata(); 
+
+		for (String name : metadataNames) {
+			if(name.equals("created")) {
+				fileMetadata.setCreated(metadata.get(name));
+			}
+			else if(name.equals("Author")) {
+				fileMetadata.setContributor(metadata.get(name));
+			}
+			//System.out.println(name + ": " + metadata.get(name));
+		}
 
 		// // printing all the meta data elements with new elements
 		// System.out.println("List of all the metadata elements after adding
 		// new elements ");
 		// String[] metadataNamesafter = metadata.names();
-		
-		return metadata;
+
+		return fileMetadata;
 	}
 
 }
