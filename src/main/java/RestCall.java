@@ -20,7 +20,8 @@ public class RestCall {
 		
 		String query = createDataQuery + matchQuery;
 		
-		return false;
+		
+		return true;
 	}
 
 }
