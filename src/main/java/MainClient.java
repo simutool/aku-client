@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Stage;
 
@@ -17,17 +18,49 @@ public class MainClient extends Application {
 		configFile.parse();
 
 		List<FileMetadata> new_files = null;
-		
 		FileService fileService = new FileService(configFile.getObserveDirectory());
-		fileService.start();
+		fileService.run();
+
+
+		// Task<Void> sleeper = new Task<Void>() {
+		// @Override
+		// protected Void call() throws Exception {
+		// try {
+		// Thread.sleep(10000);
+		// } catch (InterruptedException e) {
+		// }
+		// return null;
+		// }
+		// };
 		
-		while (true) {
+		new_files = fileService.getNewFiles();
+		
+		FileMetadataExtractor extractor = new FileMetadataExtractor();
+		
+		//System.out.println("new files size: " + new_files.isEmpty());
+		
+		for(int c = 0; c < new_files.size(); c++) {
+			//System.out.println("File Name is: " + new_files.get(c));
+			extractor.extractMetadata(new_files.get(c));
+			//System.out.println("Author is: " + new_files.get(c).getContributor());
+			
+		}
+		
+		RestCall restCall = new RestCall();
+		
+		restCall.sendFileMetadata(new_files);
+		
+		/*while (true) {
 
 			// Get New Files
 			new_files = fileService.getNewFiles();
+			
+			for(int c = 0; c < new_files.size(); c++) {
+				System.out.println("File Name is: " + new_files.get(c));
+			}*/
 
 			// Get The Missing Metadata of new Files
-			if(new_files != null) {
+			/*if(new_files != null) {
 				
 				Iterator i = new_files.iterator();
 				
@@ -71,12 +104,12 @@ public class MainClient extends Application {
 					
 				}
 				
-			}
+			}*/
 
 			// Send Meta of new files
 
 			// Send new files
-		}
+		//}
 	}
 
 	public static void main(String[] args) {

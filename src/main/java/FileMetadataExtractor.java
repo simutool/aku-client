@@ -36,6 +36,55 @@ public class FileMetadataExtractor {
 
 		return null;
 	}
+	
+	
+	public void extractMetadata(FileMetadata file) {
+
+		// parameters of parse() method
+		Parser parser = new AutoDetectParser();
+		BodyContentHandler handler = new BodyContentHandler();
+		Metadata metadata = new Metadata();
+		FileInputStream inputstream = null;
+		try {
+			inputstream = new FileInputStream(file.getFile());
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		ParseContext context = new ParseContext();
+
+		// Parsing the given file
+		try {
+			parser.parse(inputstream, handler, metadata, context);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TikaException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		String[] metadataNames = metadata.names();
+
+		for (String name : metadataNames) {
+			if(name.equals("created")) {
+				file.setCreated(metadata.get(name));
+			}
+			else if(name.equals("Author")) {
+				file.setContributor(metadata.get(name));
+			}
+			//System.out.println(name + ": " + metadata.get(name));
+		}
+
+		// // printing all the meta data elements with new elements
+		// System.out.println("List of all the metadata elements after adding
+		// new elements ");
+		// String[] metadataNamesafter = metadata.names();
+	}
+	
 
 	private FileMetadata extractMetadata(File file) {
 

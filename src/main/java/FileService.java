@@ -1,9 +1,10 @@
+import java.io.EOFException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class FileService extends Thread {
+public class FileService {
 
 	private DatabaseInteractor di;
 	private List<FileMetadata> new_files;
@@ -14,63 +15,82 @@ public class FileService extends Thread {
 		new_files = new ArrayList<FileMetadata>();
 		this.observeDirectory = observeDirectoy;
 	}
-	
+
 	public List getNewFiles() {
 		return new_files;
 	}
 
 	public void run() {
-		while(true) {
-			
-			List<String> files_in_database = di.readFiles();
-			new_files.clear();
 
-			//Code to get new files
-			List<String> new_scanned_files = null;
-			
-			File[] files = new File(observeDirectory).listFiles();
-			
-			for (File file : files) {
-			    if (file.isFile()) {
-			        new_scanned_files.add(file.getName());
-			    }
+		List<String> files_in_database = null;
+
+		// Check if database is any good
+		try {
+			files_in_database = di.readFiles();
+		} catch (Exception e) {
+			files_in_database = new ArrayList<String>();
+			System.out.println("Problem with database");
+		}
+		
+		System.out.println("Before clearing new files");
+		new_files.clear();
+		System.out.println("After clearing new files");
+
+		// Code to get new files
+		List<String> new_scanned_files = new ArrayList<String>();
+
+		File[] files = new File(observeDirectory).listFiles();
+
+		for (File file : files) {
+			if (file.isFile()) {
+				new_scanned_files.add(file.getName());
+				// System.out.println("FileName is: " + file.getName());
 			}
-			
-			Iterator<String> i = new_scanned_files.iterator();
-			
-			while(i.hasNext()) {
-				String file_name = i.next();
-				int k = files_in_database.indexOf(file_name);
-				
-				if(k==-1) {
-					//Means it is a new file
-					files_in_database.add(file_name);
-					
-					//Add the new file into a variable that the MainClient can also access
-					for(int c = 0; c < files.length; c++) {
-						if(file_name.equals(files[c].getName())) {
-							FileMetadata fileMetadata = new FileMetadata();
-							fileMetadata.setFile(files[c]);
-							new_files.add(fileMetadata);
-						}
-					}
-				}
-				else {
-					new_scanned_files.remove(file_name);
-				}
-			}
-			
-			di.updateFiles(files_in_database);
-			
-			
-			
+		}
+
+		// If the database is empty then all files are new
+		if (files_in_database == null || files_in_database.size() == 0) {
+			//System.out.println("in if");
 			try {
-				this.sleep(50000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+				for (int x = 0; x < files.length; x++) {
+					FileMetadata fileMetadata = new FileMetadata();
+					fileMetadata.setFile(files[x]);
+					new_files.add(fileMetadata);
+					//System.out.println("added to new_files 1");
+					files_in_database.add(files[x].getName());
+				}
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-	}
 
+		else {
+			//System.out.println("in else");
+			for (int c = 0; c < new_scanned_files.size(); c++) {
+				// Means file already exists in database
+				if (files_in_database.contains(new_scanned_files.get(c))) {
+					new_scanned_files.remove(c);
+				}
+				// Means its a new file
+				else {
+					System.out.println("New File Detected: " + new_scanned_files.get(c));
+					files_in_database.add(new_scanned_files.get(c));
+					// Create object of FileMetadata
+					// Find the file in Files by linear search
+					String file_name = new_scanned_files.get(c);
+					for (int x = 0; x < files.length; x++) {
+						if (file_name.equals(files[x])) {
+							FileMetadata fileMetadata = new FileMetadata();
+							fileMetadata.setFile(files[x]);
+							new_files.add(fileMetadata);
+							System.out.println("added to new_files 2");
+						}
+					}
+				}
+			}
+		}
+
+		// Current files in database (new or old)
+		di.updateFiles(files_in_database);
+	}
 }

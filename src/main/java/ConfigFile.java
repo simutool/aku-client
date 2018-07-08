@@ -87,6 +87,8 @@ public class ConfigFile {
 				int indexOfObserve = line.indexOf("observe");
 				if (indexOfObserve >= 0) {
 					observeDirectory = line.substring(11, line.length() - 1);
+					observeDirectory = observeDirectory.replaceAll("\\\\", "\\\\\\\\");
+					//System.out.println("Observe Directory is: " + observeDirectory);
 				}
 
 				// Parse File Types
