@@ -1,5 +1,6 @@
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -10,9 +11,16 @@ public class RestCallTest {
 
 	public static void main(String[] args) {
 		
-		testRestCall();
+		//testRestCall();
 		//testReach();
+		testFileCall();
 
+	}
+	
+	private static void testFileCall() {
+		File file = new File("C:\\Users\\Harshit Gupta\\workspace\\PrePoorClient\\testfiles\\Hello.txt");
+		RestCall rc = new RestCall();
+		rc.sendFile(file);
 	}
 	
 	
