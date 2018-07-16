@@ -24,6 +24,8 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
+import net.lingala.zip4j.core.ZipFile;
+
 public class RestCall {
 
 	// This will make REST Calls, and return the result
@@ -103,6 +105,41 @@ public class RestCall {
 		HttpPost post = new HttpPost("http://localhost:8085/krm/ReceiveFile");
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 		builder.addPart("fileName", new FileBody(file));
+		post.setEntity(builder.build());
+
+		HttpResponse response = null;
+		try {
+			response = httpclient.execute(post);
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		String responseJSON = "";
+		try {
+			responseJSON = EntityUtils.toString(response.getEntity());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		System.out.print("Result of file: " + responseJSON);
+	}
+	
+	public void sendZipFile(ZipFile zipfile) {
+
+		HttpClient httpclient = HttpClientBuilder.create().build();
+
+		HttpPost post = new HttpPost("http://localhost:8085/krm/ReceiveZipFile");
+		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+		builder.addPart("fileName", new FileBody(zipfile.getFile()));
 		post.setEntity(builder.build());
 
 		HttpResponse response = null;
