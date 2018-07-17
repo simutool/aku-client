@@ -56,6 +56,7 @@ public class RestCall {
 			props.add("created", new_files.get(c).getCreated());
 			props.add("uri", uri);
 			props.add("dc_identifier", dc_identifier);
+			props.add("dc_description", new_files.get(c).getDc_description());
 
 			statement01.add("statement", "CREATE (d:Data {props} )");
 			props_outer.add("props", props);
