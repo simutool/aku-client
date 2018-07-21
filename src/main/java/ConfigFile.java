@@ -21,8 +21,8 @@ public class ConfigFile {
 
 	public ConfigFile() {
 		
-		//configFile = new File("C:\\Users\\Harshit Gupta\\workspace\\PrePoorClient\\appfiles\\config.txt");
-		configFile = new File("C:\\Users\\z003x6ke\\eclipse-workspace\\PrePoorClient\\appfiles\\config2.txt");
+		configFile = new File("C:\\Users\\Harshit Gupta\\workspace\\PrePoorClient\\appfiles\\config.txt");
+		//configFile = new File("C:\\Users\\z003x6ke\\eclipse-workspace\\PrePoorClient\\appfiles\\config2.txt");
 		try {
 			br = new BufferedReader(new FileReader(configFile));
 		} catch (FileNotFoundException e) {

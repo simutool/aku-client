@@ -110,9 +110,13 @@ public class MainClient extends Application {
 		
 		
 		
-		//RestCall restCall = new RestCall();
+		RestCall restCall = new RestCall();
 		
-		//restCall.sendFileMetadata(new_files);
+		restCall.sendFileMetadata(new_files);
+		
+		for(int c = 0; c < new_files.size(); c++) {
+			restCall.sendFile(new_files.get(c).getFile());
+		}
 		
 		/*while (true) {
 
