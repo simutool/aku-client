@@ -9,6 +9,9 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 public class ConfigFile {
+	
+	String base = "C:\\Users\\Harshit Gupta\\workspace\\";
+	//String base = "C:\\Users\\z003x6ke\\eclipse-workspace\\"
 
 	private File configFile;
 	private BufferedReader br;
@@ -21,8 +24,8 @@ public class ConfigFile {
 
 	public ConfigFile() {
 		
-		configFile = new File("C:\\Users\\Harshit Gupta\\workspace\\PrePoorClient\\appfiles\\config.txt");
-		//configFile = new File("C:\\Users\\z003x6ke\\eclipse-workspace\\PrePoorClient\\appfiles\\config2.txt");
+		configFile = new File(base + "PrePoorClient\\appfiles\\config.txt");
+		//configFile = new File(base + "PrePoorClient\\appfiles\\config2.txt");
 		try {
 			br = new BufferedReader(new FileReader(configFile));
 		} catch (FileNotFoundException e) {

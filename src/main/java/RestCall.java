@@ -33,7 +33,7 @@ public class RestCall {
 	public boolean sendFileMetadata(List<FileMetadata> new_files) {
 		boolean result = false;
 		for (int c = 0; c < new_files.size(); c++) {
-			String krURL = "http://localhost:8085/krm/ReceiveMetadata";
+			String krURL = "http://141.13.162.157:8080/krm/ReceiveMetadata";
 			String dc_identifier = UUIDGenerator.getUUID();
 			String uri = "http://uni-bamberg.de/mobi/kbms/simutool/Data/" + dc_identifier;
 
@@ -103,7 +103,7 @@ public class RestCall {
 
 		HttpClient httpclient = HttpClientBuilder.create().build();
 
-		HttpPost post = new HttpPost("http://localhost:8085/krm/ReceiveFile");
+		HttpPost post = new HttpPost("http://141.13.162.157:8080/krm/ReceiveFile");
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 		builder.addPart("fileName", new FileBody(file));
 		post.setEntity(builder.build());

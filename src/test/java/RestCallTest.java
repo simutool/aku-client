@@ -39,7 +39,7 @@ public class RestCallTest {
 	public static void testReach() {
 
 		// Just testing if KRM is reachable
-		String krURL = "http://localhost:8085/krm/ReceiveMetadata";
+		String krURL = "http://141.13.162.157:8080/krm/";
 		try {
 			URL url = new URL(krURL);
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
