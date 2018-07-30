@@ -5,6 +5,9 @@
 	<artifactId>PrePoorClient</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
+	<!-- Output to jar format -->
+	<packaging>jar</packaging>
+
 	<dependencies>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.tika/tika-core -->

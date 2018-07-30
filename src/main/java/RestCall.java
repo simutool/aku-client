@@ -4,13 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
-import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 
 import org.apache.http.HttpResponse;
@@ -34,7 +32,7 @@ public class RestCall {
 		boolean result = false;
 		for (int c = 0; c < new_files.size(); c++) {
 			String krURL = "http://141.13.162.157:8080/krm/ReceiveMetadata";
-			String dc_identifier = UUIDGenerator.getUUID();
+			String dc_identifier = new_files.get(c).getDc_identifier();
 			String uri = "http://uni-bamberg.de/mobi/kbms/simutool/Data/" + dc_identifier;
 
 			// Construct Json Query for Neo4J
@@ -57,6 +55,9 @@ public class RestCall {
 			props.add("uri", uri);
 			props.add("dc_identifier", dc_identifier);
 			props.add("dc_description", new_files.get(c).getDc_description());
+			props.add("dc_subject", new_files.get(c).getDc_subject());
+			props.add("dc_references", new_files.get(c).getDc_references());
+			props.add("attachment", new_files.get(c).getAttachment());
 
 			statement01.add("statement", "CREATE (d:Data {props} )");
 			props_outer.add("props", props);
@@ -99,11 +100,12 @@ public class RestCall {
 		return result;
 	}
 
-	public void sendFile(File file) {
+	public String sendFile(File file) {
 
 		HttpClient httpclient = HttpClientBuilder.create().build();
 
-		HttpPost post = new HttpPost("http://141.13.162.157:8080/krm/ReceiveFile");
+		//HttpPost post = new HttpPost("http://141.13.162.157:8080/krm/ReceiveFile");
+		HttpPost post = new HttpPost("http://141.13.162.157:8001/skm_front/auxiliary/api/upload");
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 		builder.addPart("fileName", new FileBody(file));
 		post.setEntity(builder.build());
@@ -131,7 +133,8 @@ public class RestCall {
 		}
 		
 		
-		System.out.print("Result of file: " + responseJSON);
+		//System.out.print("Result of file: " + responseJSON);
+		return responseJSON;
 	}
 	
 	public void sendZipFile(ZipFile zipfile) {

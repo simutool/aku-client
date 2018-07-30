@@ -9,6 +9,10 @@ public class FileMetadata {
 	private String contributor;
 	private String created;
 	private String dc_description;
+	private String dc_identifier;
+	private String dc_subject;
+	private String dc_references;
+	private String attachment;
 
 	public FileMetadata() {
 		filename = null;
@@ -17,6 +21,52 @@ public class FileMetadata {
 		contributor = null;
 		created = null;
 		dc_description = null;
+	}
+	
+	
+
+	public String getDc_subject() {
+		return dc_subject;
+	}
+
+
+
+	public void setDc_subject(String dc_subject) {
+		this.dc_subject = dc_subject;
+	}
+
+
+
+	public String getDc_references() {
+		return dc_references;
+	}
+
+
+
+	public void setDc_references(String dc_references) {
+		this.dc_references = dc_references;
+	}
+
+
+
+	public String getAttachment() {
+		return attachment;
+	}
+
+
+
+	public void setAttachment(String attachment) {
+		this.attachment = attachment;
+	}
+
+
+
+	public String getDc_identifier() {
+		return dc_identifier;
+	}
+
+	public void setDc_identifier(String dc_identifier) {
+		this.dc_identifier = dc_identifier;
 	}
 
 	public File getFile() {

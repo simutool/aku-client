@@ -1,6 +1,6 @@
 []
-username = uuuu
-password = pppp
+username = uuuu2
+password = pppp2
 observe = "C:\Users\Harshit Gupta\workspace\PrePoorClient\testfiles"
 files = "*.pdf,*.txt,*.jpg"
 

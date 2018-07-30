@@ -15,7 +15,9 @@ public class DatabaseInteractor {
 	public List<String> readFiles() {
 		List<String> files = null;
 		try {
-			File database = new File(base + "PrePoorClient\\appfiles\\database.dat");
+			String path = new File("").getAbsoluteFile().getPath();
+			File database = new File(path + "\\database.dat");
+			//File database = new File(base + "PrePoorClient\\appfiles\\database.dat");
 			//File database = new File(base + "PrePoorClient\\appfiles\\database.dat");
 			if (!database.exists()) {
 				database.createNewFile();
