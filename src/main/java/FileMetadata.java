@@ -15,12 +15,12 @@ public class FileMetadata {
 	private String attachment;
 
 	public FileMetadata() {
-		filename = null;
-		file_path = null;
+		filename = "default";
+		file_path = "default";
 		file = null;
-		contributor = null;
-		created = null;
-		dc_description = null;
+		contributor = "default";
+		created = "default";
+		dc_description = "default";
 	}
 	
 	

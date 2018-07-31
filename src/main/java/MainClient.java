@@ -22,11 +22,11 @@ public class MainClient extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
-		
-		//System.out.println("1");
+
+		// System.out.println("1");
 		String path = new File("").getAbsoluteFile().getPath();
 		System.out.println("path = " + path);
-		//System.out.println("2");
+		// System.out.println("2");
 		ConfigFile configFile = null;
 		try {
 			configFile = new ConfigFile(path);
@@ -85,20 +85,20 @@ public class MainClient extends Application {
 			System.out.println("DC_Description: " + file.getDc_description());
 		}
 
-		// RestCall restCall = new RestCall();
-		//
-		// for (int c = 0; c < new_files.size(); c++) {
-		// String json = restCall.sendFile(new_files.get(c).getFile());
-		// JsonReader reader = Json.createReader(new StringReader(json));
-		// JsonObject jo = reader.readObject();
-		// reader.close();
-		// JsonValue value = jo.get("dc_identifier");
-		// String uri = value.toString();
-		// //System.out.println("\n" + new_files.get(c).getFile().getName() + ":
-		// " + uri + "\n");
-		// new_files.get(c).setDc_identifier(uri);
-		//
-		// }
+		RestCall restCall = new RestCall();
+
+		for (int c = 0; c < new_files.size(); c++) {
+			String json = restCall.sendFile(new_files.get(c).getFile());
+			JsonReader reader = Json.createReader(new StringReader(json));
+			// JsonObject jo = reader.readObject();
+			// reader.close();
+			// JsonValue value = jo.get("dc_identifier");
+			// String uri = value.toString();
+			// System.out.println("\n" + new_files.get(c).getFile().getName() + ":" + uri +"\n");
+			String uri = "default";
+			new_files.get(c).setDc_identifier(uri);
+
+		}
 		//
 		// restCall.sendFileMetadata(new_files);
 
@@ -124,8 +124,7 @@ public class MainClient extends Application {
 		 * "Please Enter The Missing Information");
 		 * 
 		 * if(file.getContributor() == null) { dialog.setContentText(
-		 * "Please Enter Contributor"); Optional<String> result =
-		 * dialog.showAndWait();
+		 * "Please Enter Contributor"); Optional<String> result = dialog.showAndWait();
 		 * 
 		 * if(result.isPresent()) { file.setContributor(result.get()); }
 		 * 

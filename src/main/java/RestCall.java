@@ -11,16 +11,24 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-
+import org.apache.http.entity.mime.Header;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.DefaultProxyRoutePlanner;
 import org.apache.http.util.EntityUtils;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import net.lingala.zip4j.core.ZipFile;
 
@@ -102,13 +110,32 @@ public class RestCall {
 
 	public String sendFile(File file) {
 
-		HttpClient httpclient = HttpClientBuilder.create().build();
+		HttpHost proxy = new HttpHost("194.145.60.1", 9400);
 
-		//HttpPost post = new HttpPost("http://141.13.162.157:8080/krm/ReceiveFile");
+		DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
+		CloseableHttpClient httpclient = HttpClients.custom().setRoutePlanner(routePlanner).build();
+
+		System.out.println("in send file");
+		// HttpClient httpclient = HttpClientBuilder.create().build();
+
+		// HttpPost post = new HttpPost("http://141.13.162.157:8080/krm/ReceiveFile");
 		HttpPost post = new HttpPost("http://141.13.162.157:8001/skm_front/auxiliary/api/upload");
+		post.addHeader("filename", file.getName());
+		post.addHeader("Content-Disposition", "attachment");
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-		builder.addPart("fileName", new FileBody(file));
+		builder.addPart(file.getName(), new FileBody(file));
+		// Path path = Paths.get(file.getAbsolutePath());
+		// try {
+		// builder.addBinaryBody(file.getName(), Files.readAllBytes(path));
+		// } catch (IOException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
 		post.setEntity(builder.build());
+		// org.apache.http.Header header = post.getEntity().getContentType();
+		// System.out.println("headerfdffas f "+header.getName());
+
+		// System.out.println("header length" + httpclient.getParams().);
 
 		HttpResponse response = null;
 		try {
@@ -131,12 +158,11 @@ public class RestCall {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		//System.out.print("Result of file: " + responseJSON);
+
+		// System.out.print("Result of file: " + responseJSON);
 		return responseJSON;
 	}
-	
+
 	public void sendZipFile(ZipFile zipfile) {
 
 		HttpClient httpclient = HttpClientBuilder.create().build();
@@ -167,8 +193,7 @@ public class RestCall {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+
 		System.out.print("Result of file: " + responseJSON);
 	}
 

@@ -18,9 +18,11 @@ public class RestCallTest {
 	}
 	
 	private static void testFileCall() {
-		File file = new File("C:\\Users\\Harshit Gupta\\workspace\\PrePoorClient\\testfiles\\Hello.txt");
+		//File file = new File("C:\\Users\\Harshit Gupta\\workspace\\PrePoorClient\\testfiles\\Hello.txt");
+		File file = new File("C:\\Users\\z003x6ke\\eclipse-workspace\\PrePoorClient\\testfiles\\Helloed.pdf");
 		RestCall rc = new RestCall();
-		rc.sendFile(file);
+		String result= rc.sendFile(file);
+		System.out.println(result);
 	}
 	
 	

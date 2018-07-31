@@ -9,15 +9,15 @@ import java.util.List;
 
 public class DatabaseInteractor {
 	
-	String base = "C:\\Users\\Harshit Gupta\\workspace\\";
-	//String base = "C:\\Users\\z003x6ke\\eclipse-workspace\\"
+	//String base = "C:\\Users\\Harshit Gupta\\workspace\\";
+	String base = "C:\\Users\\z003x6ke\\eclipse-workspace\\";
 
 	public List<String> readFiles() {
 		List<String> files = null;
 		try {
 			String path = new File("").getAbsoluteFile().getPath();
-			File database = new File(path + "\\database.dat");
-			//File database = new File(base + "PrePoorClient\\appfiles\\database.dat");
+			//File database = new File(path + "\\database.dat");
+			File database = new File(base + "PrePoorClient\\appfiles\\database.dat");
 			//File database = new File(base + "PrePoorClient\\appfiles\\database.dat");
 			if (!database.exists()) {
 				database.createNewFile();
