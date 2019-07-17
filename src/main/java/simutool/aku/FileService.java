@@ -13,11 +13,13 @@ import org.apache.commons.io.FileUtils;
 
 import com.github.fracpete.processoutput4j.output.ConsoleOutputProcessOutput;
 import com.github.fracpete.rsync4j.RSync;
+import com.google.gson.JsonElement;
 
 public class FileService {
 	
 	private static File tempDir = new File(Config.getConfig().getObserveDirectory() + "/.temp/");
 	private static String generatedId;
+	private static String generatedURL;
 	
 	public static void syncFile(Path path) {
 		if (!tempDir.exists()) {
@@ -38,15 +40,22 @@ public class FileService {
     	}
 		renameAndCopy(srcFile);
 		launchRsync();
-		MetadataSender.sendJSON();
+		//MetadataSender.sendJSON();
 	}
 	
 	private static void renameAndCopy(File srcFile) {
-    	String extension = srcFile.getName().substring(srcFile.getName().lastIndexOf('.'));
-		generatedId = UUIDGenerator.getUUID() + extension;
+		System.out.println("renaming...");
+
+    	String fileName = srcFile.getName().substring(srcFile.getName().lastIndexOf('/')+1);
+    	JsonElement idGenResponse = UUIDGenerator.getUUID(fileName);
+		generatedId = idGenResponse.getAsJsonObject().get("unique_name").toString().replaceAll("\"", "");
+		generatedURL = idGenResponse.getAsJsonObject().get("url").toString();
+
 		File destFile = new File(tempDir  + "/" + generatedId);
 		try {
 			FileUtils.copyFile(srcFile, destFile);
+			System.out.println("destFile: " + destFile);
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -85,10 +94,10 @@ public class FileService {
 	  	try {
 	  		Config conf = Config.getConfig();
 	  		System.out.println("source: " + tempDir.getAbsolutePath());
-	  		System.out.println("destination: " + "rsync://" + conf.getUsername() + "@141.13.162.157:12000/files/");
+	  		System.out.println("destination: " + "rsync://" + conf.getUsername() + "@141.13.162.157"+ conf.getRsyncPort() +"/files/");
 			final RSync rsync = new RSync()
 				  .source(tempDir.getAbsolutePath() + "/")
-				  .destination("rsync://" + conf.getUsername() + "@141.13.162.157:12000/files/")
+				  .destination("rsync://" + conf.getUsername() + "@141.13.162.157"+ conf.getRsyncPort() + "/files/")
 				  .additional("++size-only")
 				  .recursive(true)
 				  .times(true)
@@ -113,6 +122,14 @@ public class FileService {
 
 	public static void setGeneratedId(String generatedId) {
 		FileService.generatedId = generatedId;
+	}
+
+	public static String getGeneratedURL() {
+		return generatedURL;
+	}
+
+	public static void setGeneratedURL(String generatedURL) {
+		FileService.generatedURL = generatedURL;
 	}
 
 }

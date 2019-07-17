@@ -15,6 +15,9 @@
   </properties>
 
   <dependencies>
+  <!-- https://mvnrepository.com/artifact/org.eclipse/swt -->
+
+
   <!-- https://mvnrepository.com/artifact/javax.json/javax.json-api -->
 <dependency>
     <groupId>javax.json</groupId>

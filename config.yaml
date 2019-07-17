@@ -1,10 +1,19 @@
 username: "vvoronova"
 passwordFile: "C:\\dev\\pass.txt"
-observeDirectory: "C://Users/valen/eclipse-workspace/aku/source-sync/"
+
+observeDirectory: "C://dev//AKU//aku-client//source-sync//"
 activity: "http://uni-bamberg.de/mobi/kbms/simutool/Activity/Simulation"
 contributor: "http://uni-bamberg.de/mobi/kbms/simutool/User/18779w"
+
 dc_description: "Please enter a description"
 dc_subject: "ssss"
 dc_references: "rrrr"
 attachment: "aaaa"
-kgURL: "http://141.13.162.157:9000/simutool_kms/kg/api/document"
+
+kgHost: "http://141.13.162.157"
+kgPort: ":9000"
+kgURL: "/simutool_kms/kg/api?type=document"
+idGenURL: "/simutool_kms/data/api/unique-name?fn="
+inheritanceQuery: "/simutool_kms/kg/api?type=KBMSThing"
+
+rsyncPort: ":12002"

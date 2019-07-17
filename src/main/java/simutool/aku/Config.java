@@ -21,6 +21,11 @@ public class Config {
 	private String dc_references;
 	private String attachment;
 	private String kgURL;
+	private String kgHost;
+	private String kgPort;
+	private String idGenURL;
+	private String rsyncPort;
+	private String inheritanceQuery;
 	
     private static volatile Config instance;
 	
@@ -28,9 +33,16 @@ public class Config {
      * @return instance of Config class
      */
     public static Config getConfig() {
-		instance = readConfigFile();	
+    	if(instance==null) {
+    		instance = readConfigFile();	
+    	}
 		return instance;
     }
+    
+    
+    public static void updateConfig() {
+		instance = readConfigFile();	
+    }    
     
     
     /**
@@ -154,6 +166,56 @@ public class Config {
 
 	public void setKgURL(String kgURL) {
 		this.kgURL = kgURL;
+	}
+
+
+	public String getKgHost() {
+		return kgHost;
+	}
+
+
+	public void setKgHost(String kgHost) {
+		this.kgHost = kgHost;
+	}
+
+
+	public String getKgPort() {
+		return kgPort;
+	}
+
+
+	public void setKgPort(String kgPort) {
+		this.kgPort = kgPort;
+	}
+
+
+	public String getIdGenURL() {
+		return idGenURL;
+	}
+
+
+	public void setIdGenURL(String idGenURL) {
+		this.idGenURL = idGenURL;
+	}
+
+
+	public String getRsyncPort() {
+		return rsyncPort;
+	}
+
+
+	public void setRsyncPort(String rsyncPort) {
+		this.rsyncPort = rsyncPort;
+	}
+
+
+	public String getInheritanceQuery() {
+		return inheritanceQuery;
+	}
+
+
+	public void setInheritanceQuery(String inheritanceQuery) {
+		this.inheritanceQuery = inheritanceQuery;
 	}
 
 

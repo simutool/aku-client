@@ -32,6 +32,7 @@ public class Watcher {
 					System.out.println("kind "+ kind.name());
 					Path path = (Path)event.context();
 					System.out.println("path: " + path.toString());
+					Config.updateConfig();
 
 					if(!path.getFileName().toString().contains("temp")) {
 						ConfirmSync dialog = new ConfirmSync(path);

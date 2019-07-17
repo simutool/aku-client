@@ -55,7 +55,7 @@ public class ConfirmSync extends JDialog {
 		setAlwaysOnTop(true);
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		setTitle("Synchronizing");
-		setBounds(100, 100, 450, 299);
+		setBounds(100, 100, 550, 299);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -111,6 +111,7 @@ public class ConfirmSync extends JDialog {
 		}
 	    public void actionPerformed(ActionEvent e) {
 			dispose();
+			MetadataInput inp = new MetadataInput();
 			FileService.syncFile(path);
 	    }
 	}
