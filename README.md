@@ -6,7 +6,13 @@ sudo apt install rsync grsync
 (asks for confirmation y/n)
 
 
-### 2. Create configuration file
+### 2. Create destination directory (can be anywhere)
+````
+mkdir /home/destination/
+````
+
+
+### 3. Create configuration file
 ````shell
 cat > /etc/rsyncd.conf
 ````
@@ -31,12 +37,13 @@ read only = false
 ````
 Add an empty line in the end - otherwise it might parse the file wrong.
 
-### 3. Run as daemon
+
+### 4. Run as daemon
 ````shell
 rsync --daemon
 ````
 
-### 4. Open port in firewall
+### 5. Open port in firewall
 Install ufw
 ````
 sudo apt-get install ufw
