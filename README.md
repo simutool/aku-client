@@ -43,6 +43,7 @@ sudo apt-get install ufw
 ````
 
 Add rule
+
 **Warning:** for this step I needed to run `docker exec` with `--privileged` flag because I didn't have some permissions to manage network (although runnng as root). Error message: "iptables v1.6.0: can't initialize iptables table `filter': Permission denied (you must be root) Perhaps iptables or your kernel needs to be upgraded."
 
 ````
