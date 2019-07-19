@@ -40,7 +40,7 @@ public class FileService {
     	}
 		renameAndCopy(srcFile);
 		launchRsync();
-		//MetadataSender.sendJSON();
+		MetadataSender.sendJSON();
 	}
 	
 	private static void renameAndCopy(File srcFile) {

@@ -111,8 +111,8 @@ public class ConfirmSync extends JDialog {
 		}
 	    public void actionPerformed(ActionEvent e) {
 			dispose();
-			MetadataInput inp = new MetadataInput();
-			FileService.syncFile(path);
+			MetadataInput inp = new MetadataInput(path);
+			inp.setVisible(true);
 	    }
 	}
 
