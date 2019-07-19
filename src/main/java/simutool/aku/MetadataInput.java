@@ -24,13 +24,11 @@ import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.ScrollPaneLayout;
 
 
 public class MetadataInput extends JFrame {
 	
-	private JScrollPane contentPane;
+	private JPanel contentPane;
 	private JTextField titleField;
 
 	/**
@@ -55,27 +53,24 @@ public class MetadataInput extends JFrame {
 	public MetadataInput(Path path) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 500);
-		contentPane = new JScrollPane(ScrollPaneLayout.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneLayout.HORIZONTAL_SCROLLBAR_NEVER);
+		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		//contentPane.setLayout(new GridLayout(6, 0, 0, 0));
+		contentPane.setLayout(new GridLayout(6, 0, 0, 0));
         setLocationRelativeTo(null);
+        setResizable(false);
 		setAlwaysOnTop(true);
-		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		//contentPane.add(scrollPane);
 		
 		JPanel titlePanel = new JPanel();
 		contentPane.add(titlePanel);
-		titlePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		titlePanel.setLayout(new GridLayout(2, 1, 0, 0));
+		
+		JLabel titleLabel = new JLabel("Title");
+		titlePanel.add(titleLabel);
 		
 		titleField = new JTextField();
 		titlePanel.add(titleField);
 		titleField.setColumns(10);
-		
-		JLabel titleLabel = new JLabel("Title");
-		titlePanel.add(titleLabel);
 		
 		JPanel descPanel = new JPanel();
 		contentPane.add(descPanel);
@@ -95,34 +90,34 @@ public class MetadataInput extends JFrame {
 		JLabel relationLabel = new JLabel("Relations");
 		relationPanel.add(relationLabel);
 		generateComboBox(relationPanel);
-		
-//				JPanel buttonPane = new JPanel();
-//				getContentPane().add(buttonPane, BorderLayout.LINE_END);
-//				buttonPane.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-//				{
-//					JLabel label = new JLabel("");
-//					buttonPane.add(label);
-//				}
-//				{
-//					JButton okButton = new JButton("OK");
-//					okButton.addActionListener(new MetadataEnteredListener(path));
-//				//	okButton.setAction(action);
-//					okButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
-//					okButton.setActionCommand("OK");
-//					buttonPane.add(okButton);
-//					getRootPane().setDefaultButton(okButton);
-//				}
-//				{
-//					JButton cancelButton = new JButton("Cancel");
-//					cancelButton.addActionListener(new ActionListener() {
-//						public void actionPerformed(ActionEvent e) {
-//							dispose();
-//						}
-//					});
-//					cancelButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
-//					cancelButton.setActionCommand("Cancel");
-//					buttonPane.add(cancelButton);
-//				}
+
+		JPanel buttonPane = new JPanel();
+		getContentPane().add(buttonPane, BorderLayout.SOUTH);
+		buttonPane.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		{
+			JLabel label = new JLabel("");
+			buttonPane.add(label);
+		}
+		{
+			JButton okButton = new JButton("OK");
+			okButton.addActionListener(new MetadataEnteredListener(path));
+		//	okButton.setAction(action);
+			okButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			okButton.setActionCommand("OK");
+			buttonPane.add(okButton);
+			getRootPane().setDefaultButton(okButton);
+		}
+		{
+			JButton cancelButton = new JButton("Cancel");
+			cancelButton.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+				}
+			});
+			cancelButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
+			cancelButton.setActionCommand("Cancel");
+			buttonPane.add(cancelButton);
+		}
 		
 		
 	}
@@ -195,3 +190,5 @@ public class MetadataInput extends JFrame {
 	}
 
 }
+
+
