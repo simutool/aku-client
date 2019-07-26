@@ -112,14 +112,13 @@ public class RegisterPopup{
 		        
 		        Config.getConfig().setKmsEmail(username.get());
 					Config.getConfig().setKmsPassword(password.get());
-					String newHost = (host.get() != null && host.get().length() > 0) ? host.get()
-							: "http://141.13.162.157:9000";
-					Config.getConfig().setKmsHost(newHost);
-					boolean registrationSuccess = RestCalls.register(username.get(), password.get(), host.get());
+					Config.getConfig().setKmsHost(host.get());
+					boolean registrationSuccess = RestCalls.registerUser(username.get(), password.get(), host.get());
 					if (registrationSuccess) {
 						System.out.println("Watcher launched");
 						stage.hide();
 						stage.close();
+						System.out.println("Watcher.started: " + Watcher.started);
 						if(Watcher.started != null){
 							Watcher.killWatcher();
 						}

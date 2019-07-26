@@ -4,9 +4,13 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
@@ -30,12 +34,6 @@ public class RestCalls {
 
 	private static JsonObject metaJson = null;
 
-	public static void sendJSON() {
-		createJSON();
-		System.out.println(metaJson.toString());
-		sendMetadata();
-	}
-
 
 	public static void createJSON() {
 
@@ -48,19 +46,20 @@ public class RestCalls {
 
 		payObj.addProperty("uploader", Config.getConfig().getUser_identifier());
 		
-		String date = new Date().toString();
+		Date date = new Date();
+		String result = date.toString();
 	    ObjectMapper mapper = new ObjectMapper();
 	    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 	    // StdDateFormat is ISO8601 since jackson 2.9
 	    mapper.setDateFormat(new StdDateFormat().withColonInTimeZone(true));
 		try {
-			date = mapper.writeValueAsString(date);
+			result = mapper.writeValueAsString(date).replaceAll("\"", "");
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		payObj.addProperty("created", date);
+		payObj.addProperty("created", result);
 		payObj.addProperty("url", FileService.getGeneratedURL().replaceAll("\"", ""));
 		
 		if(MetadataInput.activity != null && MetadataInput.activity.length()>0) {
@@ -80,7 +79,10 @@ public class RestCalls {
 		metaJson = jj;
 	}
 
-	private static String sendMetadata() {
+	public static String sendMetadata() {
+		
+		createJSON();
+
 		try {
 			URL url = new URL(Config.getConfig().getDocumentEndpoint());
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -116,7 +118,7 @@ public class RestCalls {
 		}
 	}
 
-	public static JsonArray fetchRelations(String param) {
+	public static JsonArray makeInheritanceQuery(String param) {
 		try {
 			System.out.println(Config.getConfig().getInheritanceQueryEndpoint() + param);
 			URL url = new URL(Config.getConfig().getInheritanceQueryEndpoint() + param);
@@ -141,8 +143,6 @@ public class RestCalls {
 
 			JsonArray payload = jsonTree.getAsJsonObject().get("payload").getAsJsonArray();
 
-			System.out.println("fetchRelations: " + jsonTree);
-			System.out.println("payload: " + payload.getAsJsonArray());
 
 			return payload;
 		} catch (Exception e) {
@@ -153,7 +153,7 @@ public class RestCalls {
 		}
 	}
 
-	public static boolean register(String username, String password, String host) {
+	public static boolean registerUser(String username, String password, String host) {
 
 
 		try {
@@ -236,6 +236,54 @@ public class RestCalls {
 			InfoPopUp err = new InfoPopUp("Password error", "Please check the passwordFile value in your configuration.", AlertType.ERROR);
 			throw new NullPointerException();
 		}
+	}
+
+	public static JsonElement getUniqueFilenameUrl(String fileName) {
+		JsonElement jsonTree = null;
+		try {
+				URL obj = new URL(Config.getConfig().getIdGenEndpoint() + URLEncoder.encode(fileName, "UTF-8"));
+	
+				System.out.println("obj: " + obj);
+				
+				HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+	
+				// optional default is GET
+				con.setRequestMethod("GET");
+		
+				BufferedReader in = new BufferedReader(
+				        new InputStreamReader(con.getInputStream()));
+				String inputLine;
+				StringBuffer response = new StringBuffer();
+	
+				while ((inputLine = in.readLine()) != null) {
+					response.append(inputLine);
+				}
+				in.close();
+				JsonParser parser = new JsonParser();
+				jsonTree = parser.parse(response.toString());
+				
+				System.out.println("jsonTree: " + jsonTree);
+
+				String generatedId = jsonTree.getAsJsonObject().get("unique_name").toString();
+				String newURL = jsonTree.getAsJsonObject().get("url").toString();
+				System.out.println("generatedId: " + generatedId);
+				System.out.println("newURL: " + newURL);
+				
+				return jsonTree;
+			
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			InfoPopUp err = new InfoPopUp("Wrong id", "Id generation failed.", AlertType.ERROR);
+		}
+		return jsonTree;
+		
 	}
 
 	public static void main(String[] args) {

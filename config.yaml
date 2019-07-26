@@ -1,5 +1,14 @@
-
+user_identifier: "http://example.org/abox/79aa4490-dc57-4bb7-a992-d57beeaac772"
+object_storage_username: "rsync_usr"
+object_storage_password: null
+object_storage_host: "rsync://141.13.162.157:12002/files/"
+documentEndpoint: "http://141.13.162.157:9000/appserver/kg/api?type=document"
+idGenEndpoint: "http://141.13.162.157:9000/appserver/data/api/unique-name?fn="
+inheritanceQueryEndpoint: "http://141.13.162.157:9000/appserver/kg/api?type="
+createActivityEndpoint: "http://141.13.162.157:9000/appserver/manage/factory?class=activity"
 firstLoginEndpoint: "/appserver/register/api"
 passwordFile: "C:\\dev\\pass.txt"
+kmsEmail: "John.doe@uni-bamberg.de"
+kmsPassword: "test1234"
 kmsHost: "http://141.13.162.157:9000"
 observeDirectory: "C:\\dev\\AKU\\aku-client\\source-sync"

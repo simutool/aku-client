@@ -141,14 +141,14 @@ public class MetadataInput{
 		activityBox = new ComboBox<Tulip>();
 		activityBox.setMinWidth(475);
 
-		for(JsonElement e : RestCalls.fetchRelations("Activity")) {
+		for(JsonElement e : RestCalls.makeInheritanceQuery("Activity")) {
 
 			Tulip t = new Tulip(e.getAsJsonObject().get("identifier").toString(), 
 					e.getAsJsonObject().get("title").toString(), e.getAsJsonObject().get("type").getAsJsonArray().get(0).toString());
 			activities.add(t); 
 		}
 
-		for(JsonElement e : RestCalls.fetchRelations("KBMSThing")) {
+		for(JsonElement e : RestCalls.makeInheritanceQuery("KBMSThing")) {
 
 			Tulip t = new Tulip(e.getAsJsonObject().get("identifier").toString(), 
 					e.getAsJsonObject().get("title").toString(), e.getAsJsonObject().get("type").getAsJsonArray().get(0).toString());
@@ -184,7 +184,7 @@ public class MetadataInput{
 		refresh.setOnAction(new EventHandler<ActionEvent>() {
 		    @Override public void handle(ActionEvent ev) {
 		    	activities.clear();
-				for(JsonElement e : RestCalls.fetchRelations("Activity")) {
+				for(JsonElement e : RestCalls.makeInheritanceQuery("Activity")) {
 
 					Tulip t = new Tulip(e.getAsJsonObject().get("identifier").toString(), 
 							e.getAsJsonObject().get("title").toString(), e.getAsJsonObject().get("type").getAsJsonArray().get(0).toString());
@@ -192,14 +192,14 @@ public class MetadataInput{
 				}
 				activityBox.getItems().clear();
 				activityBox.getItems().addAll(activities);
-				FxUtilTest.autoCompleteComboBoxPlus(activityBox, (typedText, itemToCompare) -> itemToCompare.toString().toLowerCase().contains(typedText.toLowerCase()));
+				AutocompleteDecorator.autoCompleteComboBoxPlus(activityBox, (typedText, itemToCompare) -> itemToCompare.toString().toLowerCase().contains(typedText.toLowerCase()));
 
 		    }
 		});
 		
 		grid.add(box, 0, 5, 2, 1);
 
-		FxUtilTest.autoCompleteComboBoxPlus(activityBox, (typedText, itemToCompare) -> itemToCompare.toString().toLowerCase().contains(typedText.toLowerCase()));
+		AutocompleteDecorator.autoCompleteComboBoxPlus(activityBox, (typedText, itemToCompare) -> itemToCompare.toString().toLowerCase().contains(typedText.toLowerCase()));
 
 
 		Label relLabel = new Label("Relations");
@@ -220,13 +220,13 @@ public class MetadataInput{
 				System.out.println("desc: " + desc.get());
 
 				//System.out.print("activityBox: " + FxUtilTest.getComboBoxValue(activityBox));
-				if(FxUtilTest.getComboBoxValue(activityBox)!=null) {
-					activity = FxUtilTest.getComboBoxValue(activityBox).getTulipId();					
+				if(AutocompleteDecorator.getComboBoxValue(activityBox)!=null) {
+					activity = AutocompleteDecorator.getComboBoxValue(activityBox).getTulipId();					
 				}
 						
 				for(ComboBox b : relationBoxes) {
 					System.out.println("box: " + b);
-					Tulip t = (Tulip)FxUtilTest.getComboBoxValue(b);
+					Tulip t = (Tulip)AutocompleteDecorator.getComboBoxValue(b);
 					if(t!=null) {
 						chosenRelations.add( t.getTulipId() );
 					}
@@ -295,7 +295,7 @@ public class MetadataInput{
 				Button b = (Button)e.getSource();
 				if(b.getText().equals("Delete")) {
 					deleteRelation(box, comboBox2, grid);
-				}else if(FxUtilTest.getComboBoxValue(comboBox2) != null){
+				}else if(AutocompleteDecorator.getComboBoxValue(comboBox2) != null){
 					b.setText("Delete");
 					generateRelation(grid);					
 				}
@@ -316,7 +316,7 @@ public class MetadataInput{
 		//	okBtn.setTranslateX(-50);
 		grid.add(okBtn, 0, relationnum+11, 2,1);
 
-		FxUtilTest.autoCompleteComboBoxPlus(comboBox2, (typedText, itemToCompare) -> itemToCompare.toString().toLowerCase().contains(typedText.toLowerCase()));
+		AutocompleteDecorator.autoCompleteComboBoxPlus(comboBox2, (typedText, itemToCompare) -> itemToCompare.toString().toLowerCase().contains(typedText.toLowerCase()));
 		relationnum++;
 	}
 	public SimpleStringProperty getTitle() {

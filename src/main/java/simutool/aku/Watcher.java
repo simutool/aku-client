@@ -34,6 +34,7 @@ public class Watcher {
 			Path source = Paths.get(Config.getConfig().getObserveDirectory());
 			
 			started = source.register(watcher, StandardWatchEventKinds.ENTRY_CREATE);
+			System.out.println("new watcher created: " + started);
 			while (true) {
 				WatchKey key;
 				try {

@@ -6,7 +6,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
-public class FxUtilTest {
+public class AutocompleteDecorator {
 	
 	//public static ComboBox comboBox;
 
@@ -23,6 +23,8 @@ public class FxUtilTest {
         comboBox.setEditable(true);
         comboBox.getEditor().focusedProperty().addListener(observable -> {
             if (comboBox.getSelectionModel().getSelectedIndex() < 0) {
+            	System.out.println("comboBox empty: " + comboBox);
+            	System.out.println("index: " + comboBox.getSelectionModel().getSelectedIndex());
                 comboBox.getEditor().setText(null);
             }
         });

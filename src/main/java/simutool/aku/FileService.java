@@ -45,7 +45,7 @@ public class FileService {
 		System.out.println("renaming...");
 
     	String fileName = srcFile.getName().substring(srcFile.getName().lastIndexOf('/')+1);
-    	JsonElement idGenResponse = UUIDGenerator.getUUID(fileName);
+    	JsonElement idGenResponse = RestCalls.getUniqueFilenameUrl(fileName);
 		generatedId = idGenResponse.getAsJsonObject().get("unique_name").toString().replaceAll("\"", "");
 		generatedURL = idGenResponse.getAsJsonObject().get("url").toString();
 
@@ -96,7 +96,7 @@ public class FileService {
 			if(output.getExitCode() != 0) {
 				InfoPopUp err = new InfoPopUp("File transfer failed", "File could not be synchronized,  please check your credentials in configuration file.", AlertType.ERROR);
 			}else {
-				RestCalls.sendJSON();
+				RestCalls.sendMetadata();
 				InfoPopUp inf = new InfoPopUp("File sent", "File was successfully synchronized.", AlertType.INFORMATION);
 			}
 			
