@@ -1,5 +1,5 @@
 
 firstLoginEndpoint: "/appserver/register/api"
-
+passwordFile: "C:\\dev\\pass.txt"
 kmsHost: "http://141.13.162.157:9000"
 observeDirectory: "C:\\dev\\AKU\\aku-client\\source-sync"
