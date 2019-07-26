@@ -1,5 +1,8 @@
 package simutool.aku;
 
+import javafx.stage.Stage;
+
+import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -10,12 +13,27 @@ import java.nio.file.WatchService;
 
 public class Watcher {
 
-	public Watcher() {
-    	try {
-			WatchService watcher = FileSystems.getDefault().newWatchService();
-        	Path source = Paths.get(Config.getConfig().getObserveDirectory());
+    private static volatile Watcher instance;
+    public static WatchKey started;
 
-			source.register(watcher, StandardWatchEventKinds.ENTRY_CREATE);
+    public static Watcher getWatcher() {
+    	if(instance==null) {
+    		instance = new Watcher();	
+    	}
+		return instance;
+    }
+    
+    public static void killWatcher() {
+    	started.cancel();
+    }
+    
+	private Watcher() {
+
+		try {
+			WatchService watcher = FileSystems.getDefault().newWatchService();
+			Path source = Paths.get(Config.getConfig().getObserveDirectory());
+			
+			started = source.register(watcher, StandardWatchEventKinds.ENTRY_CREATE);
 			while (true) {
 				WatchKey key;
 				try {
@@ -28,17 +46,20 @@ public class Watcher {
 				//retrieve all the accumulated events
 				for (WatchEvent<?> event : key.pollEvents()) {
 					WatchEvent.Kind<?> kind = event.kind();               
-					
+
 					System.out.println("kind "+ kind.name());
 					Path path = (Path)event.context();
 					System.out.println("path: " + path.toString());
-					Config.updateConfig();
+
 
 					if(!path.getFileName().toString().contains("temp")) {
-						ConfirmSync dialog = new ConfirmSync(path);
-						dialog.setVisible(true);						
+						App.setup(false);
+					
+						File srcFile = path.toFile();
+						String type = srcFile.isFile()? "file" : "folder";
+						ConfirmSync dialog = new ConfirmSync(path, type);
 					}
-		
+
 				}             
 				//resetting the key goes back ready state
 				key.reset();
@@ -48,5 +69,5 @@ public class Watcher {
 			e.printStackTrace();
 		}
 	}
-	
+
 }

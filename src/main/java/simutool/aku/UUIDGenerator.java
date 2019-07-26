@@ -12,6 +12,8 @@ import java.util.logging.Logger;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import javafx.scene.control.Alert.AlertType;
+
 
 public class UUIDGenerator {
 	
@@ -21,7 +23,7 @@ public class UUIDGenerator {
 	public static JsonElement getUUID(String fileName) {
 		JsonElement jsonTree = null;
 		try {
-				URL obj = new URL(Config.getConfig().getKgHost() + Config.getConfig().getKgPort() + Config.getConfig().getIdGenURL() + URLEncoder.encode(fileName, "UTF-8"));
+				URL obj = new URL(Config.getConfig().getIdGenEndpoint() + URLEncoder.encode(fileName, "UTF-8"));
 	
 				System.out.println("obj: " + obj);
 				
@@ -60,6 +62,7 @@ public class UUIDGenerator {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			InfoPopUp err = new InfoPopUp("Wrong id", "Id generation failed.", AlertType.ERROR);
 		}
 		return jsonTree;
 		

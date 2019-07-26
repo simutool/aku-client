@@ -1,194 +1,361 @@
 package simutool.aku;
 
-import java.awt.EventQueue;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
+import com.google.gson.JsonElement;
 
-import java.awt.BorderLayout;
-import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
+public class MetadataInput{
 
-public class MetadataInput extends JFrame {
+	public static SimpleStringProperty title = new SimpleStringProperty();
+	public static SimpleStringProperty desc = new SimpleStringProperty();
+
+	public List<ComboBox<Tulip>> relationBoxes = new ArrayList<ComboBox<Tulip>>();
+	public static List<String> chosenRelations = new ArrayList<String>();
+	public static String activity;
+	public static List<Tulip> activities = new ArrayList<Tulip>();
+
 	
-	private JPanel contentPane;
-	private JTextField titleField;
+	public ComboBox<Tulip> activityBox;
+	
+	
+	public Stage stage;
+	Button okBtn = new Button("OK");
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					MetadataInput frame = new MetadataInput(Paths.get("somefile"));
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
+	final class Tulip {
+		public String tulipTitle;
+		public String tulipId;
+		public String tulipType;
+
+		public Tulip(String id, String title, String type){
+			tulipId = id.replaceAll("\"", "");
+			tulipTitle = title.replaceAll("\"", "");
+			tulipType = type.replaceAll("\"", "");
+		}
+
+
+		public String getTulipTitle() {
+			return tulipTitle;
+		}
+
+
+		public void setTulipTitle(String tulipTitle) {
+			this.tulipTitle = tulipTitle;
+		}
+
+
+		public String getTulipId() {
+			return tulipId;
+		}
+
+
+		public void setTulipId(String tulipId) {
+			this.tulipId = tulipId;
+		}
+
+
+		public String getTulipType() {
+			return tulipType;
+		}
+
+
+		public void setTulipType(String tulipType) {
+			this.tulipType = tulipType;
+		}
+
+
+		@Override
+		public String toString() {
+			return tulipTitle;
+		}
+
+	}
+	public List<Tulip> relations = new ArrayList<Tulip>();
+
+
+
+	public MetadataInput(Path path) {
+
+		stage = new Stage();
+
+
+		GridPane grid = new GridPane();
+
+		Text scenetitle = new Text("Please enter data");
+		scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+		grid.add(scenetitle, 0, 0, 2, 1);
+
+
+		Label titleLabel = new Label("Title:");
+		titleLabel.setMinWidth(100);
+
+		grid.add(titleLabel, 0, 2);
+		TextField titleField = new TextField();
+		titleField.setMinWidth(400);
+		grid.add(titleField, 1, 2);
+
+		Label descLabel = new Label("Description:");
+		grid.add(descLabel, 0, 3);
+		TextField descField = new TextField();
+		grid.add(descField, 1, 3);
+
+
+		Label kmsHostLabel = new Label("What Activity is this data related to?");
+		kmsHostLabel.setPadding(new Insets(10,0,0,0));
+
+		
+		kmsHostLabel.setAlignment(Pos.CENTER);
+		
+		
+		grid.add(kmsHostLabel, 0 ,4, 2, 1);
+
+		
+		HBox box = new HBox();
+		
+		
+		activityBox = new ComboBox<Tulip>();
+		activityBox.setMinWidth(475);
+
+		for(JsonElement e : RestCalls.fetchRelations("Activity")) {
+
+			Tulip t = new Tulip(e.getAsJsonObject().get("identifier").toString(), 
+					e.getAsJsonObject().get("title").toString(), e.getAsJsonObject().get("type").getAsJsonArray().get(0).toString());
+			activities.add(t); 
+		}
+
+		for(JsonElement e : RestCalls.fetchRelations("KBMSThing")) {
+
+			Tulip t = new Tulip(e.getAsJsonObject().get("identifier").toString(), 
+					e.getAsJsonObject().get("title").toString(), e.getAsJsonObject().get("type").getAsJsonArray().get(0).toString());
+			relations.add(t); 
+		}
+		
+		box.getChildren().add(activityBox);
+
+		activityBox.getItems().addAll(activities);
+
+		Button btn = new Button("New");
+		//grid.setHalignment(btn, HPos.CENTER);
+		btn.setMinWidth(55);
+		btn.setMaxWidth(55);
+		box.getChildren().add(btn);
+		box.setMargin(btn, new Insets(0,0,0,25));
+		
+		Image imageRefresh = new Image(getClass().getResourceAsStream("icon4.png"));
+		Button refresh = new Button("Refresh", new ImageView(imageRefresh));
+		refresh.setMinWidth(30);
+		refresh.setMaxWidth(30);
+		refresh.setPadding(new Insets(5,5,5,5));
+		refresh.setTooltip(new Tooltip("Refresh"));
+		box.getChildren().add(refresh);
+		box.setMargin(refresh, new Insets(0,0,0,15));
+		
+		btn.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override public void handle(ActionEvent e) {
+		    	addNewActivity();
+		    }
+		});
+		
+		refresh.setOnAction(new EventHandler<ActionEvent>() {
+		    @Override public void handle(ActionEvent ev) {
+		    	activities.clear();
+				for(JsonElement e : RestCalls.fetchRelations("Activity")) {
+
+					Tulip t = new Tulip(e.getAsJsonObject().get("identifier").toString(), 
+							e.getAsJsonObject().get("title").toString(), e.getAsJsonObject().get("type").getAsJsonArray().get(0).toString());
+					activities.add(t); 
 				}
+				activityBox.getItems().clear();
+				activityBox.getItems().addAll(activities);
+				FxUtilTest.autoCompleteComboBoxPlus(activityBox, (typedText, itemToCompare) -> itemToCompare.toString().toLowerCase().contains(typedText.toLowerCase()));
+
+		    }
+		});
+		
+		grid.add(box, 0, 5, 2, 1);
+
+		FxUtilTest.autoCompleteComboBoxPlus(activityBox, (typedText, itemToCompare) -> itemToCompare.toString().toLowerCase().contains(typedText.toLowerCase()));
+
+
+		Label relLabel = new Label("Relations");
+		grid.add(relLabel, 0 ,6, 2, 1);
+
+		generateRelation(grid);
+
+
+
+
+		Bindings.bindBidirectional(titleField.textProperty(), title);
+		Bindings.bindBidirectional(descField.textProperty(), desc);
+		//		Bindings.bindBidirectional(kmsHostBox.textProperty(), host);
+		//
+		okBtn.setOnAction(new EventHandler<ActionEvent>() {
+			@Override public void handle(ActionEvent e) {
+				System.out.println("title: " + title.get());
+				System.out.println("desc: " + desc.get());
+
+				//System.out.print("activityBox: " + FxUtilTest.getComboBoxValue(activityBox));
+				if(FxUtilTest.getComboBoxValue(activityBox)!=null) {
+					activity = FxUtilTest.getComboBoxValue(activityBox).getTulipId();					
+				}
+						
+				for(ComboBox b : relationBoxes) {
+					System.out.println("box: " + b);
+					Tulip t = (Tulip)FxUtilTest.getComboBoxValue(b);
+					if(t!=null) {
+						chosenRelations.add( t.getTulipId() );
+					}
+				}
+				
+				stage.hide();
+				stage.close();
+				FileService.syncFile(path);
+
 			}
 		});
+
+		grid.setAlignment(Pos.CENTER);
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(15, 5, 5, 15));
+		ScrollPane scrollPane = new ScrollPane(grid);
+
+
+
+		scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+		grid.setHalignment(titleLabel, HPos.CENTER);
+
+		grid.setAlignment(Pos.CENTER);        
+
+
+		Scene scene = new Scene(scrollPane, 640, 500);
+		stage.setScene(scene);		
+		stage.setScene(scene);
+
+		stage.showAndWait();
+
+
+
+
+	}
+	
+	public void deleteRelation(HBox parentBox, ComboBox box, GridPane grid) {
+		
+		grid.getChildren().remove(parentBox);
+		relationBoxes.remove(box);
 	}
 
-	/**
-	 * Create the frame.
-	 */
-	public MetadataInput(Path path) {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 500);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(contentPane);
-		contentPane.setLayout(new GridLayout(6, 0, 0, 0));
-        setLocationRelativeTo(null);
-        setResizable(false);
-		setAlwaysOnTop(true);
-		
-		JPanel titlePanel = new JPanel();
-		contentPane.add(titlePanel);
-		titlePanel.setLayout(new GridLayout(2, 1, 0, 0));
-		
-		JLabel titleLabel = new JLabel("Title");
-		titlePanel.add(titleLabel);
-		
-		titleField = new JTextField();
-		titlePanel.add(titleField);
-		titleField.setColumns(10);
-		
-		JPanel descPanel = new JPanel();
-		contentPane.add(descPanel);
-		descPanel.setLayout(new GridLayout(2, 1, 0, 0));
-		
-		JLabel descLabel = new JLabel("Description");
-		descLabel.setToolTipText("Enter a description");
-		descPanel.add(descLabel);
-		
-		JTextArea descField = new JTextArea();
-		descPanel.add(descField);
-		
-		JPanel relationPanel = new JPanel();
-		contentPane.add(relationPanel);
-		relationPanel.setLayout(new GridLayout(2, 1, 0, 0));
-		
-		JLabel relationLabel = new JLabel("Relations");
-		relationPanel.add(relationLabel);
-		generateComboBox(relationPanel);
+	int relationnum = 0;
+	public void generateRelation(GridPane grid) {
 
-		JPanel buttonPane = new JPanel();
-		getContentPane().add(buttonPane, BorderLayout.SOUTH);
-		buttonPane.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		{
-			JLabel label = new JLabel("");
-			buttonPane.add(label);
-		}
-		{
-			JButton okButton = new JButton("OK");
-			okButton.addActionListener(new MetadataEnteredListener(path));
-		//	okButton.setAction(action);
-			okButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
-			okButton.setActionCommand("OK");
-			buttonPane.add(okButton);
-			getRootPane().setDefaultButton(okButton);
-		}
-		{
-			JButton cancelButton = new JButton("Cancel");
-			cancelButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					dispose();
+		HBox box = new HBox();
+		ComboBox comboBox2 = new ComboBox();
+		comboBox2.setMinWidth(475);
+
+		relationBoxes.add(comboBox2);
+		comboBox2.getItems().addAll(relations);
+
+		box.getChildren().add(comboBox2);
+
+		Button btn = new Button("Add");
+		//grid.setHalignment(btn, HPos.CENTER);
+		btn.setMinWidth(100);
+		box.getChildren().add(btn);
+		box.setMargin(btn, new Insets(0,0,0,25));
+
+
+		btn.setOnAction(new EventHandler<ActionEvent>() {
+			@Override public void handle(ActionEvent e) {
+				Button b = (Button)e.getSource();
+				if(b.getText().equals("Delete")) {
+					deleteRelation(box, comboBox2, grid);
+				}else if(FxUtilTest.getComboBoxValue(comboBox2) != null){
+					b.setText("Delete");
+					generateRelation(grid);					
 				}
-			});
-			cancelButton.setFont(new Font("Tahoma", Font.PLAIN, 15));
-			cancelButton.setActionCommand("Cancel");
-			buttonPane.add(cancelButton);
+
+			}
+		});
+		
+		for(ComboBox b : relationBoxes) {
+			b.setDisable(true);
 		}
-		
-		
+		relationBoxes.get(relationBoxes.size()-1).setDisable(false);
+
+		grid.add(box, 0, relationnum+8, 2, 1);
+
+		grid.getChildren().remove(okBtn);
+		grid.setHalignment(okBtn, HPos.CENTER);
+		okBtn.setMinWidth(100);
+		//	okBtn.setTranslateX(-50);
+		grid.add(okBtn, 0, relationnum+11, 2,1);
+
+		FxUtilTest.autoCompleteComboBoxPlus(comboBox2, (typedText, itemToCompare) -> itemToCompare.toString().toLowerCase().contains(typedText.toLowerCase()));
+		relationnum++;
+	}
+	public SimpleStringProperty getTitle() {
+		return title;
+	}
+	public void setTitle(SimpleStringProperty title) {
+		this.title = title;
+	}
+	public SimpleStringProperty getDesc() {
+		return desc;
+	}
+	public void setDesc(SimpleStringProperty desc) {
+		this.desc = desc;
+	}
+	public List<String> getChosenRelations() {
+		return chosenRelations;
+	}
+	public void setChosenRelations(List<String> chosenRelations) {
+		this.chosenRelations = chosenRelations;
+	}
+	public String getActivity() {
+		return activity;
+	}
+	public void setActivity(String activity) {
+		this.activity = activity;
+	}
+
+	
+	public static void addNewActivity() {
+		Runtime rt = Runtime.getRuntime();
+		String url = Config.getConfig().getCreateActivityEndpoint();
+		try {
+			rt.exec("rundll32 url.dll,FileProtocolHandler " + url);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 	
-	public static void generateComboBox(JPanel relationPanel) {
-		JPanel relationItem = new JPanel();
-		relationPanel.add(relationItem);
-		GridBagLayout gbl_relationItem = new GridBagLayout();
-		gbl_relationItem.columnWidths = new int[]{322, 100, 0};
-		gbl_relationItem.rowHeights = new int[]{36, 0};
-		gbl_relationItem.columnWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
-		gbl_relationItem.rowWeights = new double[]{0.0, Double.MIN_VALUE};
-		relationItem.setLayout(gbl_relationItem);
-		
-		JComboBox relationSelect = new JComboBox();
-		relationSelect.addItem("Airbus Group");
-		relationSelect.addItem("Faurecia");
-		relationSelect.addItem("Loiretech SAS");
-		relationSelect.addItem("TWI");
-		relationSelect.addItem("Ecole Centrale de Nantes");
-		relationSelect.addItem("ECN parametric model Simulator");
-		relationSelect.addItem("MW Oven Data");
-		relationSelect.addItem("ECN Simulation for AGI demonstrator");
-		relationSelect.addItem("S-parameters of the tool concrete");
-
-		AutocompleteDecorator.enable(relationSelect);
-
-		
-				GridBagConstraints gbc_relationSelect = new GridBagConstraints();
-				gbc_relationSelect.fill = GridBagConstraints.BOTH;
-				gbc_relationSelect.insets = new Insets(0, 0, 0, 5);
-				gbc_relationSelect.gridx = 0;
-				gbc_relationSelect.gridy = 0;
-				relationItem.add(relationSelect, gbc_relationSelect);
-		
-		JButton relationAddBtn = new JButton("+");
-		relationAddBtn.addActionListener(new RelationAddBtnListener(relationItem, relationPanel));
-
-		GridBagConstraints gbc_relationAddBtn = new GridBagConstraints();
-		gbc_relationAddBtn.fill = GridBagConstraints.BOTH;
-		gbc_relationAddBtn.gridx = 1;
-		gbc_relationAddBtn.gridy = 0;
-		relationItem.add(relationAddBtn, gbc_relationAddBtn);
-		System.out.println(relationItem);
-
-	}
-	
-	private class MetadataEnteredListener implements ActionListener {
-		private Path path;
-		public  MetadataEnteredListener(Path path) {
-			this.path = path;
-		}
-	    public void actionPerformed(ActionEvent e) {
-			dispose();
-			FileService.syncFile(path);
-	    }
-	}
-	
-	public static class RelationAddBtnListener implements ActionListener {
-		private JPanel parent;
-		public  RelationAddBtnListener(JPanel prevPanel, JPanel parent) {
-			this.parent = parent;
-		}
-	    public void actionPerformed(ActionEvent e) {
-			generateComboBox(parent);
-
-			//this.dispose();
-			//FileService.syncFile(path);
-	    }
-	}
 
 }
-
-

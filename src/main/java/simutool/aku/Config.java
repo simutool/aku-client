@@ -1,31 +1,43 @@
 package simutool.aku;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.util.Map;
+import java.io.IOException;
 
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature;
+
+import javafx.scene.control.Alert.AlertType;
 
 
 public class Config {
 	
-
-	private String username;
+	// values received after registration
+	private String user_identifier;
+	private String object_storage_username;
+	private String object_storage_password;
+	private String object_storage_host;
+	
+	private String documentEndpoint;
+	private String idGenEndpoint;
+	private String inheritanceQueryEndpoint;
+	private String createActivityEndpoint;
+	
+	private String firstLoginEndpoint;
+	
+	// path to password file
 	private String passwordFile;
+	
+
+	// properties from registration popup
+	private String kmsEmail;
+	private String kmsPassword;
+	private String kmsHost;
 	private String observeDirectory;
-	private String activity;
-	private String contributor;
-	private String dc_description;
-	private String dc_subject;
-	private String dc_references;
-	private String attachment;
-	private String kgURL;
-	private String kgHost;
-	private String kgPort;
-	private String idGenURL;
-	private String rsyncPort;
-	private String inheritanceQuery;
+
 	
     private static volatile Config instance;
 	
@@ -51,15 +63,17 @@ public class Config {
      */
     private static Config readConfigFile() {
 		File initialFile = new File("config.yaml");
-		try(FileInputStream inputStream = new FileInputStream(initialFile)){
-			Yaml yaml = new Yaml(new Constructor(Config.class));
-			Config conf =  yaml.load(inputStream);
-			return conf;
+		Config conf = null;
+		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+		mapper.findAndRegisterModules();
+		try {
+			conf = mapper.readValue(initialFile, Config.class);
 		} catch (Exception e) {
+			InfoPopUp err = new InfoPopUp("Configuration error", "File config.yaml is malformed or missing.", AlertType.ERROR);
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			return null;
-		}
+		} 
+		return conf;
     }
     
 	
@@ -67,16 +81,6 @@ public class Config {
 		super();
 	}
 	
-
-
-	public String getUsername() {
-		return username;
-	}
-
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
 
 
 	public String getObserveDirectory() {
@@ -89,63 +93,95 @@ public class Config {
 	}
 
 
-	public String getActivity() {
-		return activity;
+	
+
+	public String getUser_identifier() {
+		return user_identifier;
 	}
 
 
-	public void setActivity(String activity) {
-		this.activity = activity;
+	public void setUser_identifier(String user_identifier) {
+		this.user_identifier = user_identifier;
 	}
 
 
-	public String getContributor() {
-		return contributor;
+	public String getObject_storage_username() {
+		return object_storage_username;
 	}
 
 
-	public void setContributor(String contributor) {
-		this.contributor = contributor;
+	public void setObject_storage_username(String object_storage_username) {
+		this.object_storage_username = object_storage_username;
 	}
 
 
-	public String getDc_description() {
-		return dc_description;
+	public String getObject_storage_password() {
+		return object_storage_password;
 	}
 
 
-	public void setDc_description(String dc_description) {
-		this.dc_description = dc_description;
+	public void setObject_storage_password(String object_storage_password) {
+		this.object_storage_password = object_storage_password;
 	}
 
 
-	public String getDc_subject() {
-		return dc_subject;
+	public String getObject_storage_host() {
+		return object_storage_host;
 	}
 
 
-	public void setDc_subject(String dc_subject) {
-		this.dc_subject = dc_subject;
+	public void setObject_storage_host(String object_storage_host) {
+		this.object_storage_host = object_storage_host;
 	}
 
 
-	public String getDc_references() {
-		return dc_references;
+	public String getDocumentEndpoint() {
+		return documentEndpoint;
 	}
 
 
-	public void setDc_references(String dc_references) {
-		this.dc_references = dc_references;
+	public void setDocumentEndpoint(String documentEndpoint) {
+		this.documentEndpoint = documentEndpoint;
 	}
 
 
-	public String getAttachment() {
-		return attachment;
+	public String getIdGenEndpoint() {
+		return idGenEndpoint;
 	}
 
 
-	public void setAttachment(String attachment) {
-		this.attachment = attachment;
+	public void setIdGenEndpoint(String idGenEndpoint) {
+		this.idGenEndpoint = idGenEndpoint;
+	}
+
+
+	public String getInheritanceQueryEndpoint() {
+		return inheritanceQueryEndpoint;
+	}
+
+
+	public void setInheritanceQueryEndpoint(String inheritanceQueryEndpoint) {
+		this.inheritanceQueryEndpoint = inheritanceQueryEndpoint;
+	}
+
+
+	public String getCreateActivityEndpoint() {
+		return createActivityEndpoint;
+	}
+
+
+	public void setCreateActivityEndpoint(String createActivityEndpoint) {
+		this.createActivityEndpoint = createActivityEndpoint;
+	}
+
+
+	public String getFirstLoginEndpoint() {
+		return firstLoginEndpoint;
+	}
+
+
+	public void setFirstLoginEndpoint(String firstLoginEndpoint) {
+		this.firstLoginEndpoint = firstLoginEndpoint;
 	}
 
 
@@ -159,75 +195,62 @@ public class Config {
 	}
 
 
-	public String getKgURL() {
-		return kgURL;
+	public String getKmsEmail() {
+		return kmsEmail;
 	}
 
 
-	public void setKgURL(String kgURL) {
-		this.kgURL = kgURL;
+	public void setKmsEmail(String kmsEmail) {
+		this.kmsEmail = kmsEmail;
 	}
 
 
-	public String getKgHost() {
-		return kgHost;
+	public String getKmsPassword() {
+		return kmsPassword;
 	}
 
 
-	public void setKgHost(String kgHost) {
-		this.kgHost = kgHost;
+	public void setKmsPassword(String kmsPassword) {
+		this.kmsPassword = kmsPassword;
 	}
 
 
-	public String getKgPort() {
-		return kgPort;
+	public String getKmsHost() {
+		return kmsHost;
 	}
 
 
-	public void setKgPort(String kgPort) {
-		this.kgPort = kgPort;
+	public void setKmsHost(String kmsHost) {
+		this.kmsHost = kmsHost;
+	}
+	
+	public boolean isValid(String value) {
+		return value != null && value.length()>0;
 	}
 
 
-	public String getIdGenURL() {
-		return idGenURL;
+	public void generateYaml() {
+		ObjectMapper mapper = new ObjectMapper(new YAMLFactory().disable(Feature.WRITE_DOC_START_MARKER));
+		mapper.findAndRegisterModules();
+
+		// Write object as YAML file
+		try {
+			mapper.writeValue(new File("config.yaml"), this);
+		} catch (JsonGenerationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	 
 	}
-
-
-	public void setIdGenURL(String idGenURL) {
-		this.idGenURL = idGenURL;
-	}
-
-
-	public String getRsyncPort() {
-		return rsyncPort;
-	}
-
-
-	public void setRsyncPort(String rsyncPort) {
-		this.rsyncPort = rsyncPort;
-	}
-
-
-	public String getInheritanceQuery() {
-		return inheritanceQuery;
-	}
-
-
-	public void setInheritanceQuery(String inheritanceQuery) {
-		this.inheritanceQuery = inheritanceQuery;
-	}
-
-
-	@Override
-	public String toString() {
-		return "Config [username=" + username + ", observeDirectory=" + observeDirectory + ", activity=" + activity
-				+ ", contributor=" + contributor + ", dc_description=" + dc_description + ", dc_subject=" + dc_subject
-				+ ", dc_references=" + dc_references + ", attachment=" + attachment + "]";
-	}
-
 
 	public static void main(String[] args) {
 		Config c = Config.getConfig();
+		c.generateYaml();
 	}
 }

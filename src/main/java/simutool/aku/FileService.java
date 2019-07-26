@@ -1,19 +1,17 @@
 package simutool.aku;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.zeroturnaround.zip.ZipUtil;
 
 import com.github.fracpete.processoutput4j.output.ConsoleOutputProcessOutput;
 import com.github.fracpete.rsync4j.RSync;
 import com.google.gson.JsonElement;
+
+import javafx.scene.control.Alert.AlertType;
 
 public class FileService {
 	
@@ -22,6 +20,7 @@ public class FileService {
 	private static String generatedURL;
 	
 	public static void syncFile(Path path) {
+		Config.updateConfig();
 		if (!tempDir.exists()) {
 			tempDir.mkdir();
 		} else {
@@ -34,13 +33,12 @@ public class FileService {
 			}
 		}
 		
-		File srcFile = path.toFile();
+		File srcFile = new File(Config.getConfig().getObserveDirectory() + "/" +path.getFileName());
     	if(srcFile.isDirectory()) {
-    		srcFile = zipDirectory(srcFile);
+    		srcFile = zipDirectory(srcFile, path);
     	}
 		renameAndCopy(srcFile);
-		launchRsync();
-		MetadataSender.sendJSON();
+		launchRsync(tempDir.getAbsolutePath() + "/");
 	}
 	
 	private static void renameAndCopy(File srcFile) {
@@ -51,6 +49,7 @@ public class FileService {
 		generatedId = idGenResponse.getAsJsonObject().get("unique_name").toString().replaceAll("\"", "");
 		generatedURL = idGenResponse.getAsJsonObject().get("url").toString();
 
+		
 		File destFile = new File(tempDir  + "/" + generatedId);
 		try {
 			FileUtils.copyFile(srcFile, destFile);
@@ -59,45 +58,31 @@ public class FileService {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			InfoPopUp err = new InfoPopUp("Wrong id", "Id generation failed.", AlertType.ERROR);
 		}
 		
 	}
 	
-	private static File zipDirectory(File fileToZip) {
-		try(
-				FileOutputStream fos = new FileOutputStream(tempDir + "/current.zip");
-				ZipOutputStream zipOut = new ZipOutputStream(fos);
-				FileInputStream fis = new FileInputStream(fileToZip + "/")){
+	private static File zipDirectory(File fileToZip, Path path) {
+ 
+		String fileName = fileToZip.getName().substring(fileToZip.getName().lastIndexOf('/')+1);
+		File zipped = new File(fileToZip + ".zip");
 		
-			ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
-			zipOut.putNextEntry(zipEntry);
-			byte[] bytes = new byte[1024];
-			int length;
-			while((length = fis.read(bytes)) >= 0) {
-			    zipOut.write(bytes, 0, length);
-			}
-			return new File(tempDir + "current.zip");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
+		ZipUtil.pack(fileToZip, zipped);
+		return zipped;
 
 	}
 	
-	private static void launchRsync() {
+	private static void launchRsync(String source) {
 		
 	  	try {
 	  		Config conf = Config.getConfig();
-	  		System.out.println("source: " + tempDir.getAbsolutePath());
-	  		System.out.println("destination: " + "rsync://" + conf.getUsername() + "@141.13.162.157"+ conf.getRsyncPort() +"/files/");
+	  		String destination = "rsync://" + conf.getObject_storage_username() + "@" + conf.getObject_storage_host().substring(conf.getObject_storage_host().indexOf("://")+3);
+	  		System.out.println("source: " + source);
+	  		System.out.println("destination: " + destination);
 			final RSync rsync = new RSync()
-				  .source(tempDir.getAbsolutePath() + "/")
-				  .destination("rsync://" + conf.getUsername() + "@141.13.162.157"+ conf.getRsyncPort() + "/files/")
+				  .source(source)
+				  .destination(destination)
 				  .additional("++size-only")
 				  .recursive(true)
 				  .times(true)
@@ -108,7 +93,12 @@ public class FileService {
 			
 			ConsoleOutputProcessOutput output = new ConsoleOutputProcessOutput();
 			output.monitor(rsync.builder());
-
+			if(output.getExitCode() != 0) {
+				InfoPopUp err = new InfoPopUp("File transfer failed", "File could not be synchronized,  please check your credentials in configuration file.", AlertType.ERROR);
+			}else {
+				RestCalls.sendJSON();
+				InfoPopUp inf = new InfoPopUp("File sent", "File was successfully synchronized.", AlertType.INFORMATION);
+			}
 			
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -130,6 +120,11 @@ public class FileService {
 
 	public static void setGeneratedURL(String generatedURL) {
 		FileService.generatedURL = generatedURL;
+	}
+	
+	public static void main(String[] args) {
+
+		launchRsync(Config.getConfig().getObserveDirectory());
 	}
 
 }
