@@ -2,9 +2,12 @@ package simutool.aku;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -14,6 +17,9 @@ import javafx.scene.control.Alert.AlertType;
 
 
 public class Config {
+	
+	public static Logger LOGGER = Logger.getLogger( Config.class.getName() );
+
 	
 	// values received after registration
 	private String user_identifier;
@@ -69,8 +75,8 @@ public class Config {
 		try {
 			conf = mapper.readValue(initialFile, Config.class);
 		} catch (Exception e) {
+		    Config.LOGGER.log( Level.SEVERE, e.toString(), e );
 			InfoPopUp err = new InfoPopUp("Configuration error", "File config.yaml is malformed or missing.", AlertType.ERROR);
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		return conf;
@@ -238,19 +244,24 @@ public class Config {
 			mapper.writeValue(new File("config.yaml"), this);
 		} catch (JsonGenerationException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+		    Config.LOGGER.log( Level.SEVERE, e.toString(), e );
+
+			//e.printStackTrace();
 		} catch (JsonMappingException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+		    Config.LOGGER.log( Level.SEVERE, e.toString(), e );
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
+		    Config.LOGGER.log( Level.SEVERE, e.toString(), e );
+
 		}
 	 
 	}
 
 	public static void main(String[] args) {
 		Config c = Config.getConfig();
-		c.generateYaml();
 	}
 }

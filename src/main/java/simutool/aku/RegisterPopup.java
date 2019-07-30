@@ -28,9 +28,9 @@ public class RegisterPopup{
 	public SimpleStringProperty password = new SimpleStringProperty(Config.getConfig().getKmsPassword());
 	public SimpleStringProperty host = new SimpleStringProperty(Config.getConfig().getKmsHost());
 	public Stage stage;
-	
+
 	public RegisterPopup() {
-		
+
 		stage = new Stage();
 
 		GridPane grid = new GridPane();
@@ -50,14 +50,14 @@ public class RegisterPopup{
 		grid.add(pw, 0, 3);
 		PasswordField pwBox = new PasswordField();
 		grid.add(pwBox, 1, 3);
-		
+
 		Label kmsHostLabel = new Label("Host:");
 		grid.add(kmsHostLabel, 0, 4);
 
 		TextField kmsHostBox = new TextField();
 		kmsHostBox.setPromptText("e.g. http://141.13.162.157:9000");
 		grid.add(kmsHostBox, 1, 4);
-		
+
 		Label dirLabel = new Label("Observe\r\ndirectory:");
 		grid.add(dirLabel, 0, 5);
 
@@ -65,23 +65,23 @@ public class RegisterPopup{
 		Button dirButton = new Button(buttonLabel);
 		dirButton.setMinWidth(400);
 		grid.add(dirButton, 1, 5);
-		
+
 		final DirectoryChooser directoryChooser = new DirectoryChooser();
 
 		dirButton.setOnAction(new EventHandler<ActionEvent>() { 
-            @Override
-            public void handle(ActionEvent event) {
-                File dir = directoryChooser.showDialog(stage);
-                if (dir != null) {
-                	String result = dir.getAbsolutePath();
-                	dirButton.setText(result);
-                	Config.getConfig().setObserveDirectory(result);
-                } else {
-                	dirButton.setText("Choose");
-                }
-            }
-        });
-		
+			@Override
+			public void handle(ActionEvent event) {
+				File dir = directoryChooser.showDialog(stage);
+				if (dir != null) {
+					String result = dir.getAbsolutePath();
+					dirButton.setText(result);
+					Config.getConfig().setObserveDirectory(result);
+				} else {
+					dirButton.setText("Choose");
+				}
+			}
+		});
+
 		Button okBtn = new Button("OK");
 		grid.setHalignment(okBtn, HPos.CENTER);
 		okBtn.setMinWidth(100);
@@ -93,44 +93,45 @@ public class RegisterPopup{
 		Bindings.bindBidirectional(kmsHostBox.textProperty(), host);
 
 		okBtn.setOnAction(new EventHandler<ActionEvent>() {
-		    @Override public void handle(ActionEvent e) {
-		        System.out.println("new username: " + username.get());
-		        System.out.println("new password: " + password.get());
-		        System.out.println("dir: " + Config.getConfig().getObserveDirectory());
+			@Override public void handle(ActionEvent e) {
+				System.out.println("new username: " + username.get());
+				System.out.println("new password: " + password.get());
+			
+				System.out.println("dir: " + Config.getConfig().getObserveDirectory());
 
-		        
-		        try {
+
+				try {
 					File dir = new File(Config.getConfig().getObserveDirectory());
 					if(!dir.exists()) {
 						InfoPopUp err = new InfoPopUp("No directory selected","Please choose a directory you want to observe", AlertType.ERROR);
 					}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					// e1.printStackTrace();
 					InfoPopUp err = new InfoPopUp("No directory selected","Please choose a directory you want to observe", AlertType.ERROR);
 				}
-		        
-		        Config.getConfig().setKmsEmail(username.get());
-					Config.getConfig().setKmsPassword(password.get());
-					Config.getConfig().setKmsHost(host.get());
-					boolean registrationSuccess = RestCalls.registerUser(username.get(), password.get(), host.get());
-					if (registrationSuccess) {
-						System.out.println("Watcher launched");
-						stage.hide();
-						stage.close();
-						System.out.println("Watcher.started: " + Watcher.started);
-						if(Watcher.started != null){
-							Watcher.killWatcher();
-						}
-						Watcher w = Watcher.getWatcher();
-					} else {
-						stage.hide();
-						stage.close();
-					} 
-				
-		    }
+
+				Config.getConfig().setKmsEmail(username.get());
+				Config.getConfig().setKmsPassword(password.get());
+				Config.getConfig().setKmsHost(host.get());
+				boolean registrationSuccess = RestCalls.registerUser(username.get(), password.get(), host.get());
+				if (registrationSuccess) {
+					//System.out.println("Watcher launched");
+					stage.hide();
+					stage.close();
+					//System.out.println("Watcher.started: " + Watcher.started);
+					if(Watcher.started != null){
+						Watcher.killWatcher();
+					}
+					Watcher w = Watcher.getWatcher();
+				} else {
+					stage.hide();
+					stage.close();
+				} 
+
+			}
 		});
-		
+
 		grid.setAlignment(Pos.CENTER);
 		grid.setHgap(10);
 		grid.setVgap(10);
@@ -139,14 +140,6 @@ public class RegisterPopup{
 		stage.setScene(scene);		
 		stage.setScene(scene);
 		stage.showAndWait();
-
-
-		
-		
 	}
-	
 
-	
-	
-	
 }

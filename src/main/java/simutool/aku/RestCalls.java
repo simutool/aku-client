@@ -11,11 +11,8 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
-import java.util.Locale;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,34 +35,27 @@ public class RestCalls {
 	public static void createJSON() {
 
 		JsonObject jj = new JsonObject();
-		
+
 		JsonArray payload = new JsonArray();
 		JsonObject payObj = new JsonObject();
 		payObj.addProperty("title", MetadataInput.title.get());
 		payObj.addProperty("description", MetadataInput.desc.get());
 
 		payObj.addProperty("uploader", Config.getConfig().getUser_identifier());
-		
-		Date date = new Date();
-		String result = date.toString();
-	    ObjectMapper mapper = new ObjectMapper();
-	    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-	    // StdDateFormat is ISO8601 since jackson 2.9
-	    mapper.setDateFormat(new StdDateFormat().withColonInTimeZone(true));
-		try {
-			result = mapper.writeValueAsString(date).replaceAll("\"", "");
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
+		Date date = new Date();
+		String result = (date.getYear()+1900)+"-"+String.format("%02d", (date.getMonth()+1))+"-"+String.format("%02d", date.getDate())+
+				" " + String.format("%02d", date.getHours()) + ":" + String.format("%02d", date.getMinutes()) + 
+				":" + String.format("%02d", date.getSeconds());
+		// StdDateFormat is ISO8601 since jackson 2.9
+		
 		payObj.addProperty("created", result);
 		payObj.addProperty("url", FileService.getGeneratedURL().replaceAll("\"", ""));
-		
+
 		if(MetadataInput.activity != null && MetadataInput.activity.length()>0) {
 			payObj.addProperty("activity", MetadataInput.activity);			
 		}
-		
+
 		if(MetadataInput.chosenRelations != null && MetadataInput.chosenRelations.size()>0) {
 			JsonArray relations = new JsonArray();
 			for(String s : MetadataInput.chosenRelations) {
@@ -80,7 +70,7 @@ public class RestCalls {
 	}
 
 	public static String sendMetadata() {
-		
+
 		createJSON();
 
 		try {
@@ -107,8 +97,7 @@ public class RestCalls {
 				sendResult = sendResult + line;
 				line = in.readLine();
 			}
-			System.out.println("Result from KRM: " + sendResult);
-			// result = Boolean.getBoolean(sendResult);
+			// System.out.println("Result from KRM: " + sendResult);
 			return sendResult;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -120,11 +109,11 @@ public class RestCalls {
 
 	public static JsonArray makeInheritanceQuery(String param) {
 		try {
-			System.out.println(Config.getConfig().getInheritanceQueryEndpoint() + param);
+			// System.out.println(Config.getConfig().getInheritanceQueryEndpoint() + param);
 			URL url = new URL(Config.getConfig().getInheritanceQueryEndpoint() + param);
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
-			System.out.println("url: " + url);
+			// System.out.println("url: " + url);
 
 			con.setRequestMethod("GET");
 
@@ -143,11 +132,10 @@ public class RestCalls {
 
 			JsonArray payload = jsonTree.getAsJsonObject().get("payload").getAsJsonArray();
 
-
 			return payload;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// e.printStackTrace();
 			InfoPopUp err = new InfoPopUp("Connection error", "An error occured while connecting to the host.", AlertType.ERROR);
 			return null;
 		}
@@ -155,17 +143,16 @@ public class RestCalls {
 
 	public static boolean registerUser(String username, String password, String host) {
 
-
 		try {
 			username = username.toLowerCase();
 			JsonObject regRequestBody = new JsonObject();
 			regRequestBody.addProperty("email", username);
 			regRequestBody.addProperty("password", password);
-			System.out.println("regRequestBody: " + regRequestBody);
+			// System.out.println("regRequestBody: " + regRequestBody);
 
 			URL url = new URL(Config.getConfig().getKmsHost() + Config.getConfig().getFirstLoginEndpoint());
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			System.out.println("url: " + url);
+			// System.out.println("url: " + url);
 
 			String encoding = Base64.getEncoder().encodeToString((username + ":" + password).getBytes("UTF-8"));
 
@@ -189,16 +176,8 @@ public class RestCalls {
 			JsonElement jsonTree = null;
 			JsonParser parser = new JsonParser();
 			jsonTree = parser.parse(sendResult.toString());
-			//				jsonTree = parser.parse("{'object_storage_host': '141.13.162.157:12002/files/', " +
-			//						"'object_storage_username': 'vvoronova', " +
-			//						"'object_storage_password': 'somepassword', " +
-			//						"'user_identifier': 'http://uni-bamberg.de/mobi/kbms/simutool/User/18779w', " +
-			//						"'document_endpoint': 'http://141.13.162.157:9000/simutool_kms/kg/api?type=document', " +
-			//						"'id_gen_endpoint': 'http://141.13.162.157:9000/simutool_kms/data/api/unique-name?fn=', " +
-			//						"'inheritance_query_endpoint': 'http://141.13.162.157:9000/simutool_kms/kg/api?type=KBMSThing', " + 
-			//						"'create_activity_endpoint': 'http://141.13.162.157:9000/simutool_kms/manage/factory?class=Activity&Action=new'}");
 
-			System.out.println(jsonTree);
+			// System.out.println(jsonTree);
 
 			// Refresh values
 			Config.getConfig().setObject_storage_host(jsonTree.getAsJsonObject().get("object_storage_host").toString().replaceAll("\"", ""));
@@ -218,7 +197,7 @@ public class RestCalls {
 			Config.getConfig().updateConfig();
 			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 			InfoPopUp err = new InfoPopUp("Server error", "A problem with registration occured, please check credentials.", AlertType.ERROR);
 			return false;
 		}
@@ -228,11 +207,11 @@ public class RestCalls {
 
 	public static void makePasswordFile(String password) {
 		try(BufferedWriter writer = new BufferedWriter(new FileWriter(Config.getConfig().getPasswordFile()))){
-			System.out.println(Config.getConfig().getPasswordFile());
-			System.out.println(password.replaceAll("\"", ""));
+			// System.out.println(Config.getConfig().getPasswordFile());
+			// System.out.println(password.replaceAll("\"", ""));
 			writer.write(password);
 		}catch(Exception e) {
-			e.printStackTrace();
+			// e.printStackTrace();
 			InfoPopUp err = new InfoPopUp("Password error", "Please check the passwordFile value in your configuration.", AlertType.ERROR);
 			throw new NullPointerException();
 		}
@@ -241,62 +220,60 @@ public class RestCalls {
 	public static JsonElement getUniqueFilenameUrl(String fileName) {
 		JsonElement jsonTree = null;
 		try {
-				URL obj = new URL(Config.getConfig().getIdGenEndpoint() + URLEncoder.encode(fileName, "UTF-8"));
-	
-				System.out.println("obj: " + obj);
-				
-				HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-	
-				// optional default is GET
-				con.setRequestMethod("GET");
-		
-				BufferedReader in = new BufferedReader(
-				        new InputStreamReader(con.getInputStream()));
-				String inputLine;
-				StringBuffer response = new StringBuffer();
-	
-				while ((inputLine = in.readLine()) != null) {
-					response.append(inputLine);
-				}
-				in.close();
-				JsonParser parser = new JsonParser();
-				jsonTree = parser.parse(response.toString());
-				
-				System.out.println("jsonTree: " + jsonTree);
+			URL obj = new URL(Config.getConfig().getIdGenEndpoint() + URLEncoder.encode(fileName, "UTF-8"));
 
-				String generatedId = jsonTree.getAsJsonObject().get("unique_name").toString();
-				String newURL = jsonTree.getAsJsonObject().get("url").toString();
-				System.out.println("generatedId: " + generatedId);
-				System.out.println("newURL: " + newURL);
-				
-				return jsonTree;
-			
+			// System.out.println("obj: " + obj);
+
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+			con.setRequestMethod("GET");
+
+			BufferedReader in = new BufferedReader(
+					new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			JsonParser parser = new JsonParser();
+			jsonTree = parser.parse(response.toString());
+
+			// System.out.println("jsonTree: " + jsonTree);
+
+			String generatedId = jsonTree.getAsJsonObject().get("unique_name").toString();
+			String newURL = jsonTree.getAsJsonObject().get("url").toString();
+			// System.out.println("generatedId: " + generatedId);
+			// System.out.println("newURL: " + newURL);
+
+			return jsonTree;
+
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// e.printStackTrace();
 		} catch (ProtocolException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// e.printStackTrace();
 			InfoPopUp err = new InfoPopUp("Wrong id", "Id generation failed.", AlertType.ERROR);
 		}
 		return jsonTree;
-		
+
 	}
 
 	public static void main(String[] args) {
-		//RestCalls r = new RestCalls();
-	    ObjectMapper mapper = new ObjectMapper();
-	    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-	    // StdDateFormat is ISO8601 since jackson 2.9
-	    mapper.setDateFormat(new StdDateFormat().withColonInTimeZone(true));
-	    try {
-	    	Date date = new Date();
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		try {
+			Date date = new Date();
 			String result = mapper.writeValueAsString(date);
 			System.out.println("date: " + date);
-			System.out.println("result: " + result);
+			System.out.println("result: " + (date.getYear()+1900)+"-"+String.format("%02d", (date.getMonth()+1))+"-"+String.format("%02d", date.getDate())+
+					" " + String.format("%02d", date.getHours()) + ":" + String.format("%02d", date.getMinutes()) + 
+					":" + String.format("%02d", date.getSeconds()) );
 		} catch (JsonProcessingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

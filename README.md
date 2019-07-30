@@ -1,67 +1,33 @@
-# Rsync Setup
-### 1. Instal rsync
-````shell
-sudo apt install rsync grsync
-````
-(asks for confirmation y/n)
+Automatic Knowledge Uploader is a tool for synchronizing the contents of your a directory with the KMS storage.
+
+# Installation
+Download the distribution package and unzip it in any location, that does't require administrator permissions (e.g. under `C:\Users\User\`).
+
+Distribution package (Windows x64)
+https://gitlab.rz.uni-bamberg.de/mobi/simutool/aku-client/blob/master/AKU.zip
+
+Important files:
+- **aku-start.bat** - double click this script to start application
+- **aku — autorun Shortcut** - a shortcut for adding the app to autorun. If you want the app to start automatically on each system start, drag and drop this file to your autorun folder (typically `C:\Users\valen\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup`).
+- **aku.jar** - the app core
+- **config.yaml** - configuration file. 
+
+### Usage:
+1. When you start the programm for the first time, app will ask you to enter some data: email, password, host address and directory you want to synchronize.
+    **Changing directory:** to change the directory later, go to `config.yaml` and delete the whole line with `observeDirectory` variable, then restart the app with `aku-start.bat`.
+2. Program will watch your directory and detect new files and folders. When something is found, it will ask you whether you want to send this document to the server. 
+3. If you choose to send your file, the app will ask to enter some metadata. Provide the document with a title, description, optionally you can link it to an Activity and add any number of Relations.
+4. After sending you get a confirmation that you data succesfully arrived.
 
 
-### 2. Create destination directory (can be anywhere)
-````
-mkdir /home/destination/
-````
+# Building instructions
 
+AKU-client is a Maven app with JavaFX GUI. App.java is the entry point, you can start it as Java Application.
 
-### 3. Create configuration file
-````shell
-cat > /etc/rsyncd.conf
-````
+Requires compiler complience level 1.8 and higher (change under `Properties > Java Compiler` if any problems occur).
 
-with following contents:
+#### Step 1: Build jar
+Run in Eclipse with `Maven build` configuration, setting goals to `package`.
 
-````
-pid file = /var/run/rsyncd.pid
-lock file = /var/run/rsync.lock
-log file = /var/log/rsync.log
-port = 12002
-charset = utf–8
-
-[files]
-path = /home/destination/
-comment = "public rsync share"
-use chroot = true
-uid = root
-gid = root
-read only = false
-
-````
-Add an empty line in the end - otherwise it might parse the file wrong.
-
-
-### 4. Run as daemon
-````shell
-rsync --daemon
-````
-
-### 5. Open port in firewall
-Install ufw
-````
-sudo apt-get install ufw
-````
-
-Add rule
-
-**Warning:** for this step I needed to run `docker exec` with `--privileged` flag because I didn't have some permissions to manage network (although runnng as root). Error message: "iptables v1.6.0: can't initialize iptables table `filter': Permission denied (you must be root) Perhaps iptables or your kernel needs to be upgraded."
-
-````
-sudo ufw  allow 12002
-````
-
-
-# Launching app
-
-Entry point is class App.java, start it as Java aplication.
-
-Configuration data is stored in file config.yaml. Set your **username**, **passwordFile** and **observeDirectory** variables there.
-
-Requires compiler complience level 1.7 and higher (change under Properties > Java Compiler if any problems occur).
+#### Step 2: Add to package
+Find file `target/aku-0.0.1-SNAPSHOT-jar-with-dependencies.jar`. and rename it to `aku.jar`. Replace the file with the same name in the distribution package that we provide.

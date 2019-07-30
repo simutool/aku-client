@@ -40,10 +40,10 @@ public class MetadataInput{
 	public static String activity;
 	public static List<Tulip> activities = new ArrayList<Tulip>();
 
-	
+
 	public ComboBox<Tulip> activityBox;
-	
-	
+
+
 	public Stage stage;
 	Button okBtn = new Button("OK");
 
@@ -128,16 +128,16 @@ public class MetadataInput{
 		Label kmsHostLabel = new Label("What Activity is this data related to?");
 		kmsHostLabel.setPadding(new Insets(10,0,0,0));
 
-		
+
 		kmsHostLabel.setAlignment(Pos.CENTER);
-		
-		
+
+
 		grid.add(kmsHostLabel, 0 ,4, 2, 1);
 
-		
+
 		HBox box = new HBox();
-		
-		
+
+
 		activityBox = new ComboBox<Tulip>();
 		activityBox.setMinWidth(475);
 
@@ -154,18 +154,17 @@ public class MetadataInput{
 					e.getAsJsonObject().get("title").toString(), e.getAsJsonObject().get("type").getAsJsonArray().get(0).toString());
 			relations.add(t); 
 		}
-		
+
 		box.getChildren().add(activityBox);
 
 		activityBox.getItems().addAll(activities);
 
 		Button btn = new Button("New");
-		//grid.setHalignment(btn, HPos.CENTER);
 		btn.setMinWidth(55);
 		btn.setMaxWidth(55);
 		box.getChildren().add(btn);
 		box.setMargin(btn, new Insets(0,0,0,25));
-		
+
 		Image imageRefresh = new Image(getClass().getResourceAsStream("icon4.png"));
 		Button refresh = new Button("Refresh", new ImageView(imageRefresh));
 		refresh.setMinWidth(30);
@@ -174,16 +173,16 @@ public class MetadataInput{
 		refresh.setTooltip(new Tooltip("Refresh"));
 		box.getChildren().add(refresh);
 		box.setMargin(refresh, new Insets(0,0,0,15));
-		
+
 		btn.setOnAction(new EventHandler<ActionEvent>() {
-		    @Override public void handle(ActionEvent e) {
-		    	addNewActivity();
-		    }
+			@Override public void handle(ActionEvent e) {
+				addNewActivity();
+			}
 		});
-		
+
 		refresh.setOnAction(new EventHandler<ActionEvent>() {
-		    @Override public void handle(ActionEvent ev) {
-		    	activities.clear();
+			@Override public void handle(ActionEvent ev) {
+				activities.clear();
 				for(JsonElement e : RestCalls.makeInheritanceQuery("Activity")) {
 
 					Tulip t = new Tulip(e.getAsJsonObject().get("identifier").toString(), 
@@ -193,10 +192,9 @@ public class MetadataInput{
 				activityBox.getItems().clear();
 				activityBox.getItems().addAll(activities);
 				AutocompleteDecorator.autoCompleteComboBoxPlus(activityBox, (typedText, itemToCompare) -> itemToCompare.toString().toLowerCase().contains(typedText.toLowerCase()));
-
-		    }
+			}
 		});
-		
+
 		grid.add(box, 0, 5, 2, 1);
 
 		AutocompleteDecorator.autoCompleteComboBoxPlus(activityBox, (typedText, itemToCompare) -> itemToCompare.toString().toLowerCase().contains(typedText.toLowerCase()));
@@ -208,30 +206,28 @@ public class MetadataInput{
 		generateRelation(grid);
 
 
-
-
 		Bindings.bindBidirectional(titleField.textProperty(), title);
 		Bindings.bindBidirectional(descField.textProperty(), desc);
-		//		Bindings.bindBidirectional(kmsHostBox.textProperty(), host);
-		//
+
+
 		okBtn.setOnAction(new EventHandler<ActionEvent>() {
 			@Override public void handle(ActionEvent e) {
-				System.out.println("title: " + title.get());
-				System.out.println("desc: " + desc.get());
+				// System.out.println("title: " + title.get());
+				// System.out.println("desc: " + desc.get());
 
 				//System.out.print("activityBox: " + FxUtilTest.getComboBoxValue(activityBox));
 				if(AutocompleteDecorator.getComboBoxValue(activityBox)!=null) {
 					activity = AutocompleteDecorator.getComboBoxValue(activityBox).getTulipId();					
 				}
-						
+
 				for(ComboBox b : relationBoxes) {
-					System.out.println("box: " + b);
+					// System.out.println("box: " + b);
 					Tulip t = (Tulip)AutocompleteDecorator.getComboBoxValue(b);
 					if(t!=null) {
 						chosenRelations.add( t.getTulipId() );
 					}
 				}
-				
+
 				stage.hide();
 				stage.close();
 				FileService.syncFile(path);
@@ -245,28 +241,21 @@ public class MetadataInput{
 		grid.setPadding(new Insets(15, 5, 5, 15));
 		ScrollPane scrollPane = new ScrollPane(grid);
 
-
-
 		scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
 		grid.setHalignment(titleLabel, HPos.CENTER);
 
 		grid.setAlignment(Pos.CENTER);        
 
-
 		Scene scene = new Scene(scrollPane, 640, 500);
 		stage.setScene(scene);		
 		stage.setScene(scene);
 
 		stage.showAndWait();
-
-
-
-
 	}
-	
+
 	public void deleteRelation(HBox parentBox, ComboBox box, GridPane grid) {
-		
+
 		grid.getChildren().remove(parentBox);
 		relationBoxes.remove(box);
 	}
@@ -284,7 +273,6 @@ public class MetadataInput{
 		box.getChildren().add(comboBox2);
 
 		Button btn = new Button("Add");
-		//grid.setHalignment(btn, HPos.CENTER);
 		btn.setMinWidth(100);
 		box.getChildren().add(btn);
 		box.setMargin(btn, new Insets(0,0,0,25));
@@ -302,7 +290,7 @@ public class MetadataInput{
 
 			}
 		});
-		
+
 		for(ComboBox b : relationBoxes) {
 			b.setDisable(true);
 		}
@@ -313,7 +301,6 @@ public class MetadataInput{
 		grid.getChildren().remove(okBtn);
 		grid.setHalignment(okBtn, HPos.CENTER);
 		okBtn.setMinWidth(100);
-		//	okBtn.setTranslateX(-50);
 		grid.add(okBtn, 0, relationnum+11, 2,1);
 
 		AutocompleteDecorator.autoCompleteComboBoxPlus(comboBox2, (typedText, itemToCompare) -> itemToCompare.toString().toLowerCase().contains(typedText.toLowerCase()));
@@ -344,7 +331,7 @@ public class MetadataInput{
 		this.activity = activity;
 	}
 
-	
+
 	public static void addNewActivity() {
 		Runtime rt = Runtime.getRuntime();
 		String url = Config.getConfig().getCreateActivityEndpoint();
@@ -352,10 +339,10 @@ public class MetadataInput{
 			rt.exec("rundll32 url.dll,FileProtocolHandler " + url);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 
 	}
-	
+
 
 }
