@@ -4,6 +4,7 @@ Automatic Knowledge Uploader is a tool for synchronizing the contents of your a 
 Download the distribution package and unzip it in any location, that does't require administrator permissions (e.g. under `C:\Users\User\`).
 
 Distribution package (Windows x64)
+
 https://gitlab.rz.uni-bamberg.de/mobi/simutool/aku-client/blob/master/AKU.zip
 
 Important files:
@@ -14,7 +15,8 @@ Important files:
 
 ### Usage:
 1. When you start the programm for the first time, app will ask you to enter some data: email, password, host address and directory you want to synchronize.
-    **Changing directory:** to change the directory later, go to `config.yaml` and delete the whole line with `observeDirectory` variable, then restart the app with `aku-start.bat`.
+    
+	**Changing directory:** to change the directory later, go to `config.yaml` and delete the whole line with `observeDirectory` variable, then restart the app with `aku-start.bat`.
 2. Program will watch your directory and detect new files and folders. When something is found, it will ask you whether you want to send this document to the server. 
 3. If you choose to send your file, the app will ask to enter some metadata. Provide the document with a title, description, optionally you can link it to an Activity and add any number of Relations.
 4. After sending you get a confirmation that you data succesfully arrived.
@@ -25,6 +27,8 @@ Important files:
 AKU-client is a Maven app with JavaFX GUI. App.java is the entry point, you can start it as Java Application.
 
 Requires compiler complience level 1.8 and higher (change under `Properties > Java Compiler` if any problems occur).
+
+Rename `config.yaml_` to `config.yaml`.
 
 #### Step 1: Build jar
 Run in Eclipse with `Maven build` configuration, setting goals to `package`.
