@@ -1,11 +1,13 @@
-Automatic Knowledge Uploader is a tool for synchronizing the contents of your a directory with the KMS storage.
+Automatic Knowledge Uploader is a tool for synchronizing the contents of your directory with the KMS storage.
 
 # Installation
 Download the distribution package and unzip it in any location, that does't require administrator permissions (e.g. under `C:\Users\User\`).
 
+
 Distribution package (Windows x64)
 
 https://gitlab.rz.uni-bamberg.de/mobi/simutool/aku-client/blob/master/AKU.zip
+
 
 Important files:
 - **aku-start.bat** - double click this script to start application
