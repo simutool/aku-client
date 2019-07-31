@@ -8,7 +8,7 @@ public class InfoPopUp{
 
 	public InfoPopUp(String shortDesc, String longDesc, AlertType type) {
 		Alert alert = new Alert(type);
-		alert.setTitle("Error");
+		alert.setTitle(shortDesc);
 
 		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
 		stage.setAlwaysOnTop(true);
