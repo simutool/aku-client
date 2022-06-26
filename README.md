@@ -1,4 +1,4 @@
-Automatic Knowledge Uploader is a tool for synchronizing the contents of your directory with the KMS storage.
+Automatic Knowledge Uploader is an interactive wizard for meta-data entry and detection, which synchronizes with the kgservice server (https://github.com/simutool/kgservice). It also detects and uploads the corresponding data.
 
 # Installation
 Download the distribution package and unzip it in any location, that does't require administrator permissions (e.g. under `C:\Users\User\`).
